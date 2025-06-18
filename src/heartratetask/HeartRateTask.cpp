@@ -24,16 +24,18 @@ void HeartRateTask::Process(void* instance) {
 }
 
 void HeartRateTask::Work() {
+  return;
+
   int lastBpm = 0;
   while (true) {
     Messages msg;
     uint32_t delay;
     if (state == States::Running) {
-      if (measurementStarted) {
-        delay = ppg.deltaTms;
-      } else {
-        delay = 100;
-      }
+      // if (measurementStarted) {
+      delay = ppg.deltaTms;
+      // } else {
+      //   delay = 100;
+      // }
     } else {
       delay = portMAX_DELAY;
     }
@@ -46,58 +48,58 @@ void HeartRateTask::Work() {
           break;
         case Messages::WakeUp:
           state = States::Running;
-          if (measurementStarted) {
-            lastBpm = 0;
-            StartMeasurement();
-          }
-          break;
-        case Messages::StartMeasurement:
-          if (measurementStarted) {
-            break;
-          }
+          // if (measurementStarted) {
           lastBpm = 0;
           StartMeasurement();
-          measurementStarted = true;
+          // }
           break;
-        case Messages::StopMeasurement:
-          if (!measurementStarted) {
-            break;
-          }
-          StopMeasurement();
-          measurementStarted = false;
-          break;
+          // case Messages::StartMeasurement:
+          //   if (measurementStarted) {
+          //     break;
+          //   }
+          //   lastBpm = 0;
+          //   StartMeasurement();
+          //   measurementStarted = true;
+          //   break;
+          // case Messages::StopMeasurement:
+          //   if (!measurementStarted) {
+          //     break;
+          //   }
+          //   StopMeasurement();
+          //   measurementStarted = false;
+          //   break;
       }
     }
 
-    if (measurementStarted) {
-      auto sensorData = heartRateSensor.ReadHrsAls();
-      int8_t ambient = ppg.Preprocess(sensorData.hrs, sensorData.als);
-      int bpm = ppg.HeartRate();
+    // if (measurementStarted) {
+    auto sensorData = heartRateSensor.ReadHrsAls();
+    int8_t ambient = ppg.Preprocess(sensorData.hrs, sensorData.als);
+    int bpm = ppg.HeartRate();
 
-      // If ambient light detected or a reset requested (bpm < 0)
-      if (ambient > 0) {
-        // Reset all DAQ buffers
-        ppg.Reset(true);
-        // Force state to NotEnoughData (below)
-        lastBpm = 0;
-        bpm = 0;
-      } else if (bpm < 0) {
-        // Reset all DAQ buffers except HRS buffer
-        ppg.Reset(false);
-        // Set HR to zero and update
-        bpm = 0;
-        controller.Update(Controllers::HeartRateController::States::Running, bpm);
-      }
-
-      if (lastBpm == 0 && bpm == 0) {
-        controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
-      }
-
-      if (bpm != 0) {
-        lastBpm = bpm;
-        controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
-      }
+    // If ambient light detected or a reset requested (bpm < 0)
+    if (ambient > 0) {
+      // Reset all DAQ buffers
+      ppg.Reset(true);
+      // Force state to NotEnoughData (below)
+      lastBpm = 0;
+      bpm = 0;
+    } else if (bpm < 0) {
+      // Reset all DAQ buffers except HRS buffer
+      ppg.Reset(false);
+      // Set HR to zero and update
+      bpm = 0;
+      controller.Update(Controllers::HeartRateController::States::Running, bpm);
     }
+
+    if (lastBpm == 0 && bpm == 0) {
+      controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
+    }
+
+    if (bpm != 0) {
+      lastBpm = bpm;
+      controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
+    }
+    // }
   }
 }
 

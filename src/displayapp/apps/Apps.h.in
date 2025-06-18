@@ -6,52 +6,53 @@ namespace Pinetime {
   namespace Applications {
     enum class Apps : uint8_t {
       None,
-      Launcher,
+      // Launcher,
       Clock,
-      SysInfo,
+      // SysInfo,
       FirmwareUpdate,
-      FirmwareValidation,
+      // FirmwareValidation,
       NotificationsPreview,
       Notifications,
-      Timer,
+      // Timer,
       Alarm,
-      FlashLight,
+      // FlashLight,
       BatteryInfo,
-      Music,
-      Paint,
-      Paddle,
-      Twos,
+      // Music,
+      // Paint,
+      // Paddle,
+      // Twos,
       HeartRate,
-      Navigation,
-      StopWatch,
-      Metronome,
+      // Navigation,
+      // StopWatch,
+      // Metronome,
       Motion,
       Steps,
       Dice,
       Weather,
       PassKey,
-      QuickSettings,
-      Settings,
-      SettingWatchFace,
-      SettingTimeFormat,
-      SettingWeatherFormat,
-      SettingDisplay,
-      SettingWakeUp,
-      SettingSteps,
-      SettingSetDateTime,
-      SettingChimes,
-      SettingShakeThreshold,
-      SettingBluetooth,
-      Error
+      // QuickSettings,
+      // Settings,
+      // SettingWatchFace,
+      // SettingTimeFormat,
+      // SettingWeatherFormat,
+      // SettingDisplay,
+      // SettingWakeUp,
+      // SettingSteps,
+      // SettingSetDateTime,
+      // SettingChimes,
+      // SettingShakeThreshold,
+      // SettingBluetooth,
+      Error,
+      Timer
     };
 
     enum class WatchFace : uint8_t {
-      Digital,
-      Analog,
-      PineTimeStyle,
-      Terminal,
-      Infineat,
-      CasioStyleG7710,
+      // Digital,
+      Analog
+      // PineTimeStyle,
+      // Terminal,
+      // Infineat,
+      // CasioStyleG7710,
     };
 
     template <Apps>
@@ -65,7 +66,7 @@ namespace Pinetime {
       static constexpr size_t Count = sizeof...(As);
     };
 
-    using UserAppTypes = TypeList<@USERAPP_TYPES@>;
+    // using UserAppTypes = TypeList<@USERAPP_TYPES@>;
 
     template <WatchFace... Ws>
     struct WatchFaceTypeList {

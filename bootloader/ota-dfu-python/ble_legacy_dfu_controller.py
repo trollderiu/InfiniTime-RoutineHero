@@ -135,7 +135,7 @@ class BleDfuControllerLegacy(NrfBleDfuController):
         segment_count = 0
         segment_total = int(math.ceil(self.image_size/float(self.pkt_payload_size)))
         time_start = time.time()
-        last_send_time = time.time()
+        # last_send_time = time.time()
         print("Begin DFU")
         for i in range(0, self.image_size, self.pkt_payload_size):
             segment = self.bin_array[i:i + self.pkt_payload_size]

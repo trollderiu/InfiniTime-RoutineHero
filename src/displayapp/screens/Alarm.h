@@ -20,7 +20,7 @@
 #include "displayapp/apps/Apps.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
-#include "displayapp/widgets/Counter.h"
+// #include "displayapp/widgets/Counter.h"
 #include "displayapp/Controllers.h"
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
@@ -56,14 +56,14 @@ namespace Pinetime {
         enum class EnableButtonState { On, Off, Alerting };
         void DisableAlarm();
         void SetRecurButtonState();
-        void SetSwitchState(lv_anim_enable_t anim);
+        // void SetSwitchState(lv_anim_enable_t anim);
         void SetAlarm();
         void ShowInfo();
         void HideInfo();
         void ToggleRecurrence();
-        void UpdateAlarmTime();
-        Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
-        Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
+        // void UpdateAlarmTime();
+        // Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
+        // Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
       };
     }
 

@@ -74,13 +74,13 @@ def main():
     if not img_path.is_file():
         print(f"Input file is missing: '{args.img}'")
         return 1
-    print(f"Beginning conversion of {args.img}")
-    if out.exists():
-        if args.force:
-            print(f"overwriting {args.output_file}")
-        else:
-            pritn(f"Error: refusing to overwrite {args.output_file} without -f specified.")
-            return 1
+    # print(f"Beginning conversion of {args.img}")
+    # if out.exists():
+    #     if args.force:
+    #         print(f"overwriting {args.output_file}")
+    #     else:
+    #         print(f"Error: refusing to overwrite {args.output_file} without -f specified.")
+    #         return 1
     out.touch()
 
     # only implemented the bare minimum, everything else is not implemented
@@ -147,7 +147,12 @@ def main():
 
         for y in range(img_height):
             for x in range(img_width):
-                c = img.getpixel((x,y))
+                try:
+                    c, a = img.getpixel((x,y))
+                except:
+                    # print("MISSING IMAGE PIXEL")
+                    c = 0
+
                 p = w * y + (x >> 3) + 8  # +8 for the palette
                 buf[p] |= (c & 0x1) << (7 - (x & 0x7))
         # write palette information, for indexed-1-bit we need palette with two values
@@ -175,6 +180,7 @@ def main():
         case _:
             # raise just to be sure
             raise NotImplementedError(f"args.color_format '{args.color_format}' not implemented")
+
     header_32bit = lv_cf | (img_width << 10) | (img_height << 21)
     buf_out = bytearray(4 + len(buf))
     buf_out[0] = header_32bit & 0xFF

@@ -26,7 +26,8 @@ const char* BootloaderVersion::VersionString() {
 }
 
 bool BootloaderVersion::IsValid() {
-  return BootloaderVersion::version >= 0x00010000;
+  // return BootloaderVersion::version >= 0x00010000;
+  return true;
 }
 
 void BootloaderVersion::SetVersion(uint32_t v) {

@@ -161,7 +161,8 @@ typedef void* lv_anim_user_data_t;
 #define LV_USE_OUTLINE  0
 
 /*1: enable pattern drawing on rectangles*/
-#define LV_USE_PATTERN  1
+// #define LV_USE_PATTERN  1
+#define LV_USE_PATTERN  0
 
 /*1: enable value string drawing on rectangles*/
 #define LV_USE_VALUE_STR    0
@@ -173,7 +174,7 @@ typedef void* lv_anim_user_data_t;
 #define LV_USE_OPA_SCALE        0
 
 /* 1: Use image zoom and rotation*/
-#define LV_USE_IMG_TRANSFORM    0
+#define LV_USE_IMG_TRANSFORM    1
 
 /* 1: Enable object groups (for keyboard/encoder navigation) */
 #define LV_USE_GROUP            0
@@ -376,9 +377,9 @@ typedef void* lv_indev_drv_user_data_t;            /*Type of user data in the in
  * https://fonts.google.com/specimen/Montserrat  */
 #define LV_FONT_MONTSERRAT_8     0
 #define LV_FONT_MONTSERRAT_10    0
-#define LV_FONT_MONTSERRAT_12    0
+#define LV_FONT_MONTSERRAT_12    1
 #define LV_FONT_MONTSERRAT_14    0
-#define LV_FONT_MONTSERRAT_16    0
+#define LV_FONT_MONTSERRAT_16    1
 #define LV_FONT_MONTSERRAT_18    0
 #define LV_FONT_MONTSERRAT_20    0
 #define LV_FONT_MONTSERRAT_22    0
@@ -413,13 +414,13 @@ typedef void* lv_indev_drv_user_data_t;            /*Type of user data in the in
  *                                LV_FONT_DECLARE(my_font_2)
  */
 
-#define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(jetbrains_mono_bold_20) \
-                               LV_FONT_DECLARE(jetbrains_mono_extrabold_compressed) \
-                               LV_FONT_DECLARE(jetbrains_mono_42) \
-                               LV_FONT_DECLARE(jetbrains_mono_76) \
-                               LV_FONT_DECLARE(open_sans_light) \
-                               LV_FONT_DECLARE(fontawesome_weathericons) \
-                               LV_FONT_DECLARE(lv_font_sys_48)
+// #define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(jetbrains_mono_bold_20) \
+//                                LV_FONT_DECLARE(jetbrains_mono_extrabold_compressed) \
+//                                LV_FONT_DECLARE(jetbrains_mono_42) \
+//                                LV_FONT_DECLARE(jetbrains_mono_76) \
+//                                LV_FONT_DECLARE(open_sans_light) \
+//                                LV_FONT_DECLARE(fontawesome_weathericons) \
+//                                LV_FONT_DECLARE(lv_font_sys_48)
 
 /* Enable it if you have fonts with a lot of characters.
  * The limit depends on the font size, font face and bpp
@@ -479,10 +480,10 @@ typedef void* lv_font_user_data_t;
 #define LV_THEME_DEFAULT_COLOR_PRIMARY      lv_color_hex(0xffffff)
 #define LV_THEME_DEFAULT_COLOR_SECONDARY    lv_color_hex(0xaaaaaa)
 #define LV_THEME_DEFAULT_FLAG               0//LV_THEME_MATERIAL_FLAG_DARK
-#define LV_THEME_DEFAULT_FONT_SMALL         &jetbrains_mono_bold_20
-#define LV_THEME_DEFAULT_FONT_NORMAL        &jetbrains_mono_bold_20
-#define LV_THEME_DEFAULT_FONT_SUBTITLE      &jetbrains_mono_bold_20
-#define LV_THEME_DEFAULT_FONT_TITLE         &jetbrains_mono_bold_20
+#define LV_THEME_DEFAULT_FONT_SMALL         &lv_font_montserrat_12
+#define LV_THEME_DEFAULT_FONT_NORMAL        &lv_font_montserrat_16
+#define LV_THEME_DEFAULT_FONT_SUBTITLE      &lv_font_montserrat_16
+#define LV_THEME_DEFAULT_FONT_TITLE         &lv_font_montserrat_16
 
 /*=================
  *  Text settings
@@ -577,6 +578,9 @@ typedef void* lv_obj_user_data_t;
 /*Arc (dependencies: -)*/
 #define LV_USE_ARC      1
 
+/*Pie (dependencies: -)*/
+// #define LV_USE_PIE 1
+
 /*Bar (dependencies: -)*/
 #define LV_USE_BAR      1
 
@@ -584,25 +588,10 @@ typedef void* lv_obj_user_data_t;
 #define LV_USE_BTN      1
 
 /*Button matrix (dependencies: -)*/
-#define LV_USE_BTNMATRIX     1
-
-/*Calendar (dependencies: -)*/
-#define LV_USE_CALENDAR 1
-#if LV_USE_CALENDAR
-#define LV_CALENDAR_WEEK_STARTS_MONDAY    0
-#endif
+#define LV_USE_BTNMATRIX     0
 
 /*Canvas (dependencies: lv_img)*/
-#define LV_USE_CANVAS   0
-
-/*Check box (dependencies: lv_btn, lv_label)*/
-#define LV_USE_CHECKBOX       1
-
-/*Chart (dependencies: -)*/
-#define LV_USE_CHART    1
-#if LV_USE_CHART
-#define LV_CHART_AXIS_TICK_LABEL_MAX_LEN    256
-#endif
+#define LV_USE_CANVAS   1
 
 /*Container (dependencies: -*/
 #define LV_USE_CONT     1
@@ -611,7 +600,7 @@ typedef void* lv_obj_user_data_t;
 #define LV_USE_CPICKER   0
 
 /*Drop down list (dependencies: lv_page, lv_label, lv_symbol_def.h)*/
-#define LV_USE_DROPDOWN    1
+#define LV_USE_DROPDOWN    0
 #if LV_USE_DROPDOWN != 0
 /*Open and close default animation time [ms] (0: no animation)*/
 #define LV_DROPDOWN_DEF_ANIM_TIME     200
@@ -624,7 +613,7 @@ typedef void* lv_obj_user_data_t;
 #define LV_USE_IMG      1
 
 /*Image Button (dependencies: lv_btn*/
-#define LV_USE_IMGBTN   1
+#define LV_USE_IMGBTN   0
 #if LV_USE_IMGBTN
 /*1: The imgbtn requires left, mid and right parts and the width can be set freely*/
 #define LV_IMGBTN_TILED 0
@@ -660,7 +649,7 @@ typedef void* lv_obj_user_data_t;
 #define LV_USE_LINE     1
 
 /*List (dependencies: lv_page, lv_btn, lv_label, (lv_img optionally for icons ))*/
-#define LV_USE_LIST     1
+#define LV_USE_LIST     0
 #if LV_USE_LIST != 0
 /*Default animation time of focusing to a list element [ms] (0: no animation)  */
 #define LV_LIST_DEF_ANIM_TIME  100
@@ -703,30 +692,30 @@ typedef void* lv_obj_user_data_t;
 #define LV_USE_ROLLER    1
 #if LV_USE_ROLLER != 0
 /*Focus animation time [ms] (0: no animation)*/
-#define LV_ROLLER_DEF_ANIM_TIME     200
+#define LV_ROLLER_DEF_ANIM_TIME     0
 
 /*Number of extra "pages" when the roller is infinite*/
-#define LV_ROLLER_INF_PAGES         7
+#define LV_ROLLER_INF_PAGES         0
 #endif
 
 /*Slider (dependencies: lv_bar)*/
-#define LV_USE_SLIDER    1
+#define LV_USE_SLIDER    0
 
 /*Spinbox (dependencies: lv_ta)*/
 #define LV_USE_SPINBOX       0
 
 /*Switch (dependencies: lv_slider)*/
-#define LV_USE_SWITCH       1
+#define LV_USE_SWITCH       0
 
 /*Text area (dependencies: lv_label, lv_page)*/
-#define LV_USE_TEXTAREA       1
+#define LV_USE_TEXTAREA       0
 #if LV_USE_TEXTAREA != 0
 #define LV_TEXTAREA_DEF_CURSOR_BLINK_TIME 400     /*ms*/
 #define LV_TEXTAREA_DEF_PWD_SHOW_TIME     1500    /*ms*/
 #endif
 
 /*Table (dependencies: lv_label)*/
-#define LV_USE_TABLE    1
+#define LV_USE_TABLE    0
 #if LV_USE_TABLE
 #define LV_TABLE_COL_MAX    12
 #define LV_TABLE_CELL_STYLE_CNT 6

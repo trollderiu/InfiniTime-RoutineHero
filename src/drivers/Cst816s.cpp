@@ -80,10 +80,13 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Gestures gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
   // Validity check
+  // if (x >= maxX || y >= maxY ||
+  //     (gesture != Gestures::None && gesture != Gestures::SlideDown && gesture != Gestures::SlideUp && gesture != Gestures::SlideLeft &&
+  //      gesture != Gestures::SlideRight && gesture != Gestures::SingleTap && gesture != Gestures::DoubleTap &&
+  //      gesture != Gestures::LongPress)) {
   if (x >= maxX || y >= maxY ||
-      (gesture != Gestures::None && gesture != Gestures::SlideDown && gesture != Gestures::SlideUp && gesture != Gestures::SlideLeft &&
-       gesture != Gestures::SlideRight && gesture != Gestures::SingleTap && gesture != Gestures::DoubleTap &&
-       gesture != Gestures::LongPress)) {
+      (gesture != Gestures::None && gesture != Gestures::SlideLeft && gesture != Gestures::SlideRight && gesture != Gestures::SingleTap &&
+       gesture != Gestures::DoubleTap && gesture != Gestures::LongPress)) {
     info.isValid = false;
     return info;
   }

@@ -67,6 +67,15 @@ int AlertNotificationService::OnAlert(struct ble_gatt_access_ctxt* ctxt) {
     notif.message[messageSize - 1] = '\0';
     notif.size = messageSize;
 
+    // Only proceed if the message contains "RoutineHero"
+    std::string msg(notif.message.data(), notif.size);
+    std::transform(msg.begin(), msg.end(), msg.begin(), [](unsigned char c) {
+      return std::tolower(c);
+    });
+    if (msg.find("routinehero") == std::string::npos) {
+      return 0;
+    }
+
     // TODO convert all ANS categories to NotificationController categories
     switch (category) {
       case Categories::Call:
@@ -84,18 +93,18 @@ int AlertNotificationService::OnAlert(struct ble_gatt_access_ctxt* ctxt) {
   return 0;
 }
 
-void AlertNotificationService::AcceptIncomingCall() {
-  auto response = IncomingCallResponses::Answer;
-  auto* om = ble_hs_mbuf_from_flat(&response, 1);
+// void AlertNotificationService::AcceptIncomingCall() {
+//   auto response = IncomingCallResponses::Answer;
+//   auto* om = ble_hs_mbuf_from_flat(&response, 1);
 
-  uint16_t connectionHandle = systemTask.nimble().connHandle();
+//   uint16_t connectionHandle = systemTask.nimble().connHandle();
 
-  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
-    return;
-  }
+//   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+//     return;
+//   }
 
-  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
-}
+//   ble_gattc_notify_custom(connectionHandle, eventHandle, om);
+// }
 
 void AlertNotificationService::RejectIncomingCall() {
   auto response = IncomingCallResponses::Reject;
@@ -110,15 +119,15 @@ void AlertNotificationService::RejectIncomingCall() {
   ble_gattc_notify_custom(connectionHandle, eventHandle, om);
 }
 
-void AlertNotificationService::MuteIncomingCall() {
-  auto response = IncomingCallResponses::Mute;
-  auto* om = ble_hs_mbuf_from_flat(&response, 1);
+// void AlertNotificationService::MuteIncomingCall() {
+//   auto response = IncomingCallResponses::Mute;
+//   auto* om = ble_hs_mbuf_from_flat(&response, 1);
 
-  uint16_t connectionHandle = systemTask.nimble().connHandle();
+//   uint16_t connectionHandle = systemTask.nimble().connHandle();
 
-  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
-    return;
-  }
+//   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+//     return;
+//   }
 
-  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
-}
+//   ble_gattc_notify_custom(connectionHandle, eventHandle, om);
+// }

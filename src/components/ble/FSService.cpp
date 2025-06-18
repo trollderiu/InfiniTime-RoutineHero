@@ -9,14 +9,17 @@ constexpr ble_uuid16_t FSService::fsServiceUuid;
 constexpr ble_uuid128_t FSService::fsVersionUuid;
 constexpr ble_uuid128_t FSService::fsTransferUuid;
 
+// constexpr ble_uuid128_t FSService::fsReloadUuid;
+
 int FSServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto* fsService = static_cast<FSService*>(arg);
   return fsService->OnFSServiceRequested(conn_handle, attr_handle, ctxt);
 }
 
-FSService::FSService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::FS& fs)
+FSService::FSService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::FS& fs, DateTime& dateTimeController)
   : systemTask {systemTask},
     fs {fs},
+    dateTimeController {dateTimeController},
     characteristicDefinition {{.uuid = &fsVersionUuid.u,
                                .access_cb = FSServiceCallback,
                                .arg = this,
@@ -29,6 +32,13 @@ FSService::FSService(Pinetime::System::SystemTask& systemTask, Pinetime::Control
                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
                                 .val_handle = &transferCharacteristicHandle,
                               },
+                              // {
+                              //   .uuid = &fsReloadUuid.u,
+                              //   .access_cb = FSServiceCallback,
+                              //   .arg = this,
+                              //   .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
+                              //   .val_handle = &reloadCharacteristicHandle,
+                              // },
                               {0}},
     serviceDefinition {
       {/* Device Information Service */
@@ -57,6 +67,18 @@ int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attribut
   if (attributeHandle == transferCharacteristicHandle) {
     return FSCommandHandler(connectionHandle, context->om);
   }
+  // if (attributeHandle == reloadCharacteristicHandle) {
+  //   dateTimeController.sAngle = -1;
+  //   dateTimeController.sSlice = -1;
+
+  //   MoveResponse resp {};
+  //   resp.command = commands::MOVE_STATUS;
+  //   resp.status = 1;
+  //   auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MoveResponse));
+
+  //   ble_gattc_notify_custom(connectionHandle, reloadCharacteristicHandle, om);
+  //   return 0;
+  // }
   return 0;
 }
 
@@ -158,8 +180,12 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       int res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
       if (res == 0) {
         fs.FileClose(&f);
-        resp.status = (res == 0) ? 0x01 : (int8_t) res;
+        // resp.status = (res == 0) ? 0x01 : (int8_t) res;
+      } else if (res == 1) {
+        res = -1;
       }
+      resp.status = (int8_t) res;
+
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
@@ -168,6 +194,16 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     case commands::WRITE_DATA: {
       NRF_LOG_INFO("[FS_S] -> WriteData");
       auto* header = (WritePacing*) om->om_data;
+
+      // WriteResponse {
+      //   commands command;
+      //   uint8_t status;
+      //   uint16_t padding;
+      //   uint32_t offset;
+      //   uint64_t modTime;
+      //   uint32_t freespace;
+      // };
+
       WriteResponse resp;
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
@@ -178,10 +214,13 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
           res = fs.FileWrite(&f, header->data, header->dataSize);
         }
         fs.FileClose(&f);
+      } else if (res == 1) {
+        res = -1;
       }
-      if (res < 0) {
-        resp.status = (int8_t) res;
-      }
+      // if (res < 0) {
+      resp.status = (int8_t) res;
+      // }
+
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
@@ -199,6 +238,41 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       int res = fs.FileDelete(path);
       resp.status = (res == 0) ? 0x01 : (int8_t) res;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(DelResponse));
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      break;
+    }
+    case commands::DELETE_CORRUPTED: {
+      NRF_LOG_INFO("[FS_S] -> Delete Corrupted Files");
+
+      ListDirResponse resp {};
+      resp.command = commands::DELETE_STATUS; // Reuse DELETE_STATUS for response
+      resp.status = 0x01;
+
+      int res = fs.DirOpen("/", &dir);
+      if (res != 0) {
+        resp.status = (int8_t) res;
+        auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
+        ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+        break;
+      }
+
+      while (fs.DirRead(&dir, &info)) {
+        // if (strstr(info.name, "�") != nullptr) {
+        // int del_res = fs.FileDelete(info.name);
+        // if (del_res != 0) {
+        //   resp.status = (int8_t) del_res;
+        //   auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
+        //   ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+        //   break;
+        // }
+        // }
+        fs.FileDelete(info.name);
+      }
+
+      assert(fs.DirClose(&dir) == 0);
+
+      resp.status = 0x01; // Success status
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
     }
@@ -297,6 +371,17 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.status = (res == 0) ? 1 : res;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MoveResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      break;
+    }
+    case commands::RELOAD: {
+      dateTimeController.sAngle = -1;
+      dateTimeController.sSlice = -1;
+      MoveResponse resp {};
+      resp.command = commands::RELOAD_STATUS;
+      resp.status = 1;
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MoveResponse));
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      break;
     }
     default:
       break;

@@ -36,6 +36,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/fs/FS.h"
+#include "components/firmwarevalidator/FirmwareValidator.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -365,4 +366,8 @@ int main() {
   for (;;) {
     APP_ERROR_HANDLER(NRF_ERROR_FORBIDDEN);
   }
+
+  // CHECK AND VALIDATE IF STARTS WELL:
+  Pinetime::Controllers::FirmwareValidator validator;
+  validator.Validate();
 }

@@ -16,7 +16,7 @@
 #include "recoveryImage.h"
 #include "drivers/PinMap.h"
 
-#include "displayapp/icons/infinitime/infinitime-nb.c"
+#include "displayapp/icons/routinehero/routinehero-nb.c"
 #include "components/rle/RleDecoder.h"
 
 #if NRF_LOG_ENABLED
@@ -118,7 +118,7 @@ void Process(void* /*instance*/) {
 }
 
 void DisplayLogo() {
-  Pinetime::Tools::RleDecoder rleDecoder(infinitime_nb, sizeof(infinitime_nb));
+  Pinetime::Tools::RleDecoder rleDecoder(routinehero_nb, sizeof(routinehero_nb));
   for (int i = 0; i < displayWidth; i++) {
     rleDecoder.DecodeNext(displayBuffer, displayWidth * bytesPerPixel);
     lcd.DrawBuffer(0, i, displayWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), displayWidth * bytesPerPixel);

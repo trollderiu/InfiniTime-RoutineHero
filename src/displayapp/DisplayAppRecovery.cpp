@@ -5,7 +5,7 @@
 #include "components/fs/FS.h"
 #include "components/rle/RleDecoder.h"
 #include "touchhandler/TouchHandler.h"
-#include "displayapp/icons/infinitime/infinitime-nb.c"
+#include "displayapp/icons/routinehero/routinehero-nb.c"
 #include "components/ble/BleController.h"
 
 using namespace Pinetime::Applications;
@@ -89,7 +89,7 @@ void DisplayApp::Refresh() {
 }
 
 void DisplayApp::DisplayLogo(uint16_t color) {
-  Pinetime::Tools::RleDecoder rleDecoder(infinitime_nb, sizeof(infinitime_nb), color, colorBlack);
+  Pinetime::Tools::RleDecoder rleDecoder(routinehero_nb, sizeof(routinehero_nb), color, colorBlack);
   for (int i = 0; i < displayWidth; i++) {
     rleDecoder.DecodeNext(displayBuffer, displayWidth * bytesPerPixel);
     lcd.DrawBuffer(0, i, displayWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), displayWidth * bytesPerPixel);
@@ -114,11 +114,11 @@ void DisplayApp::PushMessage(Display::Messages msg) {
 void DisplayApp::Register(Pinetime::System::SystemTask* /*systemTask*/) {
 }
 
-void DisplayApp::Register(Pinetime::Controllers::SimpleWeatherService* /*weatherService*/) {
-}
+// void DisplayApp::Register(Pinetime::Controllers::SimpleWeatherService* /*weatherService*/) {
+// }
 
-void DisplayApp::Register(Pinetime::Controllers::MusicService* /*musicService*/) {
-}
+// void DisplayApp::Register(Pinetime::Controllers::MusicService* /*musicService*/) {
+// }
 
-void DisplayApp::Register(Pinetime::Controllers::NavigationService* /*NavigationService*/) {
-}
+// void DisplayApp::Register(Pinetime::Controllers::NavigationService* /*NavigationService*/) {
+// }

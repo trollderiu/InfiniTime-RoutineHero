@@ -134,29 +134,32 @@ void LittleVgl::InitFileSystem() {
 void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
   if (scrollDirection == FullRefreshDirections::None) {
     scrollDirection = direction;
-    if (scrollDirection == FullRefreshDirections::Down) {
-      lv_disp_set_direction(lv_disp_get_default(), 1);
-    } else if (scrollDirection == FullRefreshDirections::Right) {
+    // if (scrollDirection == FullRefreshDirections::Down) {
+    //   lv_disp_set_direction(lv_disp_get_default(), 1);
+    // } else
+    if (scrollDirection == FullRefreshDirections::Right) {
       lv_disp_set_direction(lv_disp_get_default(), 2);
     } else if (scrollDirection == FullRefreshDirections::Left) {
       lv_disp_set_direction(lv_disp_get_default(), 3);
-    } else if (scrollDirection == FullRefreshDirections::RightAnim) {
-      lv_disp_set_direction(lv_disp_get_default(), 5);
-    } else if (scrollDirection == FullRefreshDirections::LeftAnim) {
-      lv_disp_set_direction(lv_disp_get_default(), 4);
     }
+    // else if (scrollDirection == FullRefreshDirections::RightAnim) {
+    //   lv_disp_set_direction(lv_disp_get_default(), 5);
+    // } else if (scrollDirection == FullRefreshDirections::LeftAnim) {
+    //   lv_disp_set_direction(lv_disp_get_default(), 4);
+    // }
   }
   fullRefresh = true;
 }
 
 void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   uint16_t y1, y2, width, height = 0;
+  // uint16_t y1, width, height = 0;
 
-  if ((scrollDirection == LittleVgl::FullRefreshDirections::Down) && (area->y2 == visibleNbLines - 1)) {
-    writeOffset = ((writeOffset + totalNbLines) - visibleNbLines) % totalNbLines;
-  } else if ((scrollDirection == FullRefreshDirections::Up) && (area->y1 == 0)) {
-    writeOffset = (writeOffset + visibleNbLines) % totalNbLines;
-  }
+  // if ((scrollDirection == LittleVgl::FullRefreshDirections::Down) && (area->y2 == visibleNbLines - 1)) {
+  //   writeOffset = ((writeOffset + totalNbLines) - visibleNbLines) % totalNbLines;
+  // } else if ((scrollDirection == FullRefreshDirections::Up) && (area->y1 == 0)) {
+  //   writeOffset = (writeOffset + visibleNbLines) % totalNbLines;
+  // }
 
   y1 = (area->y1 + writeOffset) % totalNbLines;
   y2 = (area->y2 + writeOffset) % totalNbLines;
@@ -164,46 +167,49 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   width = (area->x2 - area->x1) + 1;
   height = (area->y2 - area->y1) + 1;
 
-  if (scrollDirection == LittleVgl::FullRefreshDirections::Down) {
+  // if (scrollDirection == LittleVgl::FullRefreshDirections::Down) {
 
-    if (area->y2 < visibleNbLines - 1) {
-      uint16_t toScroll = 0;
-      if (area->y1 == 0) {
-        toScroll = height * 2;
-        scrollDirection = FullRefreshDirections::None;
-        lv_disp_set_direction(lv_disp_get_default(), 0);
-      } else {
-        toScroll = height;
-      }
+  //   if (area->y2 < visibleNbLines - 1) {
+  //     uint16_t toScroll = 0;
+  //     if (area->y1 == 0) {
+  //       toScroll = height * 2;
+  //       scrollDirection = FullRefreshDirections::None;
+  //       lv_disp_set_direction(lv_disp_get_default(), 0);
+  //     } else {
+  //       toScroll = height;
+  //     }
 
-      if (scrollOffset >= toScroll)
-        scrollOffset -= toScroll;
-      else {
-        toScroll -= scrollOffset;
-        scrollOffset = (totalNbLines) -toScroll;
-      }
-      lcd.VerticalScrollStartAddress(scrollOffset);
-    }
+  //     if (scrollOffset >= toScroll)
+  //       scrollOffset -= toScroll;
+  //     else {
+  //       toScroll -= scrollOffset;
+  //       scrollOffset = (totalNbLines) -toScroll;
+  //     }
+  //     lcd.VerticalScrollStartAddress(scrollOffset);
+  //   }
 
-  } else if (scrollDirection == FullRefreshDirections::Up) {
+  // } else if (scrollDirection == FullRefreshDirections::Up) {
 
-    if (area->y1 > 0) {
-      if (area->y2 == visibleNbLines - 1) {
-        scrollOffset += (height * 2);
-        scrollDirection = FullRefreshDirections::None;
-        lv_disp_set_direction(lv_disp_get_default(), 0);
-      } else {
-        scrollOffset += height;
-      }
-      scrollOffset = scrollOffset % totalNbLines;
-      lcd.VerticalScrollStartAddress(scrollOffset);
-    }
-  } else if (scrollDirection == FullRefreshDirections::Left or scrollDirection == FullRefreshDirections::LeftAnim) {
+  //   if (area->y1 > 0) {
+  //     if (area->y2 == visibleNbLines - 1) {
+  //       scrollOffset += (height * 2);
+  //       scrollDirection = FullRefreshDirections::None;
+  //       lv_disp_set_direction(lv_disp_get_default(), 0);
+  //     } else {
+  //       scrollOffset += height;
+  //     }
+  //     scrollOffset = scrollOffset % totalNbLines;
+  //     lcd.VerticalScrollStartAddress(scrollOffset);
+  //   }
+  // } else
+  // if (scrollDirection == FullRefreshDirections::Left or scrollDirection == FullRefreshDirections::LeftAnim) {
+  if (scrollDirection == FullRefreshDirections::Left) {
     if (area->x2 == visibleNbLines - 1) {
       scrollDirection = FullRefreshDirections::None;
       lv_disp_set_direction(lv_disp_get_default(), 0);
     }
-  } else if (scrollDirection == FullRefreshDirections::Right or scrollDirection == FullRefreshDirections::RightAnim) {
+    // } else if (scrollDirection == FullRefreshDirections::Right or scrollDirection == FullRefreshDirections::RightAnim) {
+  } else if (scrollDirection == FullRefreshDirections::Right) {
     if (area->x1 == 0) {
       scrollDirection = FullRefreshDirections::None;
       lv_disp_set_direction(lv_disp_get_default(), 0);

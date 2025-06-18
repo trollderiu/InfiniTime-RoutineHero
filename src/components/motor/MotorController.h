@@ -16,8 +16,9 @@ namespace Pinetime {
       void StartRinging();
       void StopRinging();
 
-    private:
       static void Ring(TimerHandle_t xTimer);
+
+    private:
       static void StopMotor(TimerHandle_t xTimer);
       TimerHandle_t shortVib;
       TimerHandle_t longVib;

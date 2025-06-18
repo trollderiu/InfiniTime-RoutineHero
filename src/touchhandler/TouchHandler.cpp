@@ -16,10 +16,10 @@ namespace {
         return TouchEvents::SwipeRight;
       case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
         return TouchEvents::SwipeLeft;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return TouchEvents::SwipeDown;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return TouchEvents::SwipeUp;
+      // case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+      //   return TouchEvents::SwipeDown;
+      // case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+      //   return TouchEvents::SwipeUp;
       case Pinetime::Drivers::Cst816S::Gestures::None:
       default:
         return TouchEvents::None;
@@ -41,9 +41,10 @@ bool TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info) {
   // Only a single gesture per touch
   if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
     if (gestureReleased) {
-      if (info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideDown ||
+      if (
+          // info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideDown ||
           info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideLeft ||
-          info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp ||
+          // info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp ||
           info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideRight ||
           info.gesture == Pinetime::Drivers::Cst816S::Gestures::LongPress) {
         if (info.touching) {

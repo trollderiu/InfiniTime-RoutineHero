@@ -6,6 +6,7 @@
 #undef min
 
 #include "components/fs/FS.h"
+#include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
   namespace System {
@@ -17,7 +18,9 @@ namespace Pinetime {
 
     class FSService {
     public:
-      FSService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::FS& fs);
+      FSService(Pinetime::System::SystemTask& systemTask,
+                Pinetime::Controllers::FS& fs,
+                Pinetime::Controllers::DateTime& dateTimeController);
       void Init();
 
       int OnFSServiceRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context);
@@ -26,9 +29,11 @@ namespace Pinetime {
     private:
       Pinetime::System::SystemTask& systemTask;
       Pinetime::Controllers::FS& fs;
+      Pinetime::Controllers::DateTime& dateTimeController;
       static constexpr uint16_t FSServiceId {0xFEBB};
       static constexpr uint16_t fsVersionId {0x0100};
       static constexpr uint16_t fsTransferId {0x0200};
+      // static constexpr uint16_t fsReloadId {0x0300};
       uint16_t fsVersion = {0x0004};
       static constexpr uint16_t maxpathlen = 256;
       static constexpr ble_uuid16_t fsServiceUuid {
@@ -43,10 +48,16 @@ namespace Pinetime {
         .u {.type = BLE_UUID_TYPE_128},
         .value = {0x72, 0x65, 0x66, 0x73, 0x6e, 0x61, 0x72, 0x54, 0x65, 0x6c, 0x69, 0x46, 0x00, 0x02, 0xAF, 0xAD}};
 
+      // static constexpr ble_uuid128_t fsReloadUuid {
+      //   .u {.type = BLE_UUID_TYPE_128},
+      //   .value = {0x72, 0x65, 0x66, 0x73, 0x6e, 0x61, 0x72, 0x54, 0x65, 0x6c, 0x69, 0x46, 0x00, 0x03, 0xAF, 0xAD}};
+
       struct ble_gatt_chr_def characteristicDefinition[3];
+      // struct ble_gatt_chr_def characteristicDefinition[4];
       struct ble_gatt_svc_def serviceDefinition[2];
       uint16_t versionCharacteristicHandle;
       uint16_t transferCharacteristicHandle;
+      // uint16_t reloadCharacteristicHandle;
 
       enum class commands : uint8_t {
         INVALID = 0x00,
@@ -58,12 +69,15 @@ namespace Pinetime {
         WRITE_DATA = 0x22,
         DELETE = 0x30,
         DELETE_STATUS = 0x31,
+        DELETE_CORRUPTED = 0x32,
         MKDIR = 0x40,
         MKDIR_STATUS = 0x41,
         LISTDIR = 0x50,
         LISTDIR_ENTRY = 0x51,
         MOVE = 0x60,
-        MOVE_STATUS = 0x61
+        MOVE_STATUS = 0x61,
+        RELOAD = 0x70,
+        RELOAD_STATUS = 0x71
       };
       enum class FSState : uint8_t {
         IDLE = 0x00,

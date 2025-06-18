@@ -138,14 +138,14 @@ void SystemTask::Work() {
   settingsController.Init();
 
   displayApp.Register(this);
-  displayApp.Register(&nimbleController.weather());
-  displayApp.Register(&nimbleController.music());
-  displayApp.Register(&nimbleController.navigation());
+  // displayApp.Register(&nimbleController.weather());
+  // displayApp.Register(&nimbleController.music());
+  // displayApp.Register(&nimbleController.navigation());
   displayApp.Start(bootError);
 
-  heartRateSensor.Init();
-  heartRateSensor.Disable();
-  heartRateApp.Start();
+  // heartRateSensor.Init();
+  // heartRateSensor.Disable();
+  // heartRateApp.Start();
 
   buttonHandler.Init(this);
 
@@ -387,6 +387,7 @@ void SystemTask::GoToRunning() {
   if (state == SystemTaskState::Running) {
     return;
   }
+
   if (state == SystemTaskState::Sleeping || state == SystemTaskState::AODSleeping) {
     // SPI only switched off when entering Sleeping, not AOD or GoingToSleep
     if (state == SystemTaskState::Sleeping) {
@@ -402,7 +403,7 @@ void SystemTask::GoToRunning() {
   }
 
   displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
-  heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
+  // heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
   if (bleController.IsRadioEnabled() && !bleController.IsConnected()) {
     nimbleController.RestartFastAdv();
@@ -419,12 +420,12 @@ void SystemTask::GoToSleep() {
     return;
   }
   NRF_LOG_INFO("[systemtask] Going to sleep");
-  if (settingsController.GetAlwaysOnDisplay()) {
-    displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
-  } else {
-    displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
-  }
-  heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
+  // if (settingsController.GetAlwaysOnDisplay()) {
+  //   displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
+  // } else {
+  displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
+  // }
+  // heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
 
   state = SystemTaskState::GoingToSleep;
 };
@@ -445,7 +446,9 @@ void SystemTask::UpdateMotion() {
 
   auto motionValues = motionSensor.Process();
 
-  motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
+  // motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
+  motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps, dateTimeController);
+  // motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps, 0, 0);
 
   if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep) {
     if ((settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&

@@ -15,13 +15,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(NRF_TARGET "nrf52")
 
-if (NOT ARM_NONE_EABI_TOOLCHAIN_PATH)
-  message(FATAL_ERROR "The path to the toolchain (arm-none-eabi) must be specified on the command line (add -DARM_NONE_EABI_TOOLCHAIN_PATH=<path>")
-endif ()
+#if (NOT ARM_NONE_EABI_TOOLCHAIN_PATH)
+#  message(FATAL_ERROR "The path to the toolchain (arm-none-eabi) must be specified on the command line (add -DARM_NONE_EABI_TOOLCHAIN_PATH=<path>")
+#endif ()
 
-if (NOT NRF5_SDK_PATH)
-  message(FATAL_ERROR "The path to the NRF52 SDK must be specified on the command line (add -DNRF5_SDK_PATH=<path>")
-endif ()
+#if (NOT NRF5_SDK_PATH)
+#  message(FATAL_ERROR "The path to the NRF52 SDK must be specified on the command line (add -DNRF5_SDK_PATH=<path>")
+#endif ()
 
 if(BUILD_DFU)
   set(BUILD_DFU true)
@@ -34,16 +34,16 @@ endif()
 set(TARGET_DEVICE "PINETIME" CACHE STRING "Target device")
 set_property(CACHE TARGET_DEVICE PROPERTY STRINGS PINETIME MOY_TFK5 MOY_TIN5 MOY_TON5 MOY_UNK)
 
-set(PROJECT_GIT_COMMIT_HASH "")
+# set(PROJECT_GIT_COMMIT_HASH "")
 
-execute_process(COMMAND git rev-parse --short HEAD
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-                OUTPUT_VARIABLE PROJECT_GIT_COMMIT_HASH
-                RESULT_VARIABLE PROJECT_GIT_COMMIT_HASH_SUCCESS)
+# execute_process(COMMAND git rev-parse --short HEAD
+#                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+#                 OUTPUT_VARIABLE PROJECT_GIT_COMMIT_HASH
+#                 RESULT_VARIABLE PROJECT_GIT_COMMIT_HASH_SUCCESS)
 
-string(STRIP "${PROJECT_GIT_COMMIT_HASH}" PROJECT_GIT_COMMIT_HASH)
+# string(STRIP "${PROJECT_GIT_COMMIT_HASH}" PROJECT_GIT_COMMIT_HASH)
 
-message("PROJECT_GIT_COMMIT_HASH_SUCCESS? " ${PROJECT_GIT_COMMIT_HASH_SUCCESS})
+# message("PROJECT_GIT_COMMIT_HASH_SUCCESS? " ${PROJECT_GIT_COMMIT_HASH_SUCCESS})
 
 message("")
 message("BUILD CONFIGURATION")
@@ -51,7 +51,7 @@ message("-------------------")
 message("    * Mode : " ${CMAKE_BUILD_TYPE})
 message("    * Version : " ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 message("    * Toolchain : " ${ARM_NONE_EABI_TOOLCHAIN_PATH})
-message("    * GitRef(S) : " ${PROJECT_GIT_COMMIT_HASH})
+# message("    * GitRef(S) : " ${PROJECT_GIT_COMMIT_HASH})
 message("    * NRF52 SDK : " ${NRF5_SDK_PATH})
 message("    * Target device : " ${TARGET_DEVICE})
 if(BUILD_DFU)

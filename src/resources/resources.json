@@ -1,0 +1,66 @@
+{
+    "resources": [
+        {
+            "filename": "clocks.txt",
+            "path": "/clocks.txt"
+        },
+        {
+            "filename": "4.bin",
+            "path": "/images/4.bin"
+        },
+        {
+            "filename": "8.bin",
+            "path": "/images/8.bin"
+        },
+        {
+            "filename": "2.bin",
+            "path": "/images/2.bin"
+        },
+        {
+            "filename": "6.bin",
+            "path": "/images/6.bin"
+        },
+        {
+            "filename": "11.bin",
+            "path": "/images/11.bin"
+        },
+        {
+            "filename": "arrow.bin",
+            "path": "/images/arrow.bin"
+        },
+        {
+            "filename": "5.bin",
+            "path": "/images/5.bin"
+        },
+        {
+            "filename": "3.bin",
+            "path": "/images/3.bin"
+        },
+        {
+            "filename": "10.bin",
+            "path": "/images/10.bin"
+        },
+        {
+            "filename": "12.bin",
+            "path": "/images/12.bin"
+        },
+        {
+            "filename": "7.bin",
+            "path": "/images/7.bin"
+        },
+        {
+            "filename": "9.bin",
+            "path": "/images/9.bin"
+        },
+        {
+            "filename": "1.bin",
+            "path": "/images/1.bin"
+        }
+    ],
+    "obsolete_files": [
+        {
+            "path": "/example-of-obsolete-file.bin",
+            "since": "1.11.0"
+        }
+    ]
+}

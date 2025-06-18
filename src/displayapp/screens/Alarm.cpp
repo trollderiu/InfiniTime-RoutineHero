@@ -27,12 +27,12 @@
 using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::AlarmController;
 
-namespace {
-  void ValueChangedHandler(void* userData) {
-    auto* screen = static_cast<Alarm*>(userData);
-    screen->OnValueChanged();
-  }
-}
+// namespace {
+//   void ValueChangedHandler(void* userData) {
+//     auto* screen = static_cast<Alarm*>(userData);
+//     screen->OnValueChanged();
+//   }
+// }
 
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Alarm*>(obj->user_data);
@@ -50,27 +50,27 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
              Controllers::MotorController& motorController)
   : alarmController {alarmController}, wakeLock(systemTask), motorController {motorController} {
 
-  hourCounter.Create();
-  lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  // hourCounter.Create();
+  // lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   if (clockType == Controllers::Settings::ClockType::H12) {
-    hourCounter.EnableTwelveHourMode();
+    // hourCounter.EnableTwelveHourMode();
 
     lblampm = lv_label_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+    // lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
     lv_label_set_text_static(lblampm, "AM");
     lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
     lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
   }
-  hourCounter.SetValue(alarmController.Hours());
-  hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
+  // hourCounter.SetValue(alarmController.Hours());
+  // hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
-  minuteCounter.Create();
-  lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-  minuteCounter.SetValue(alarmController.Minutes());
-  minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
+  // minuteCounter.Create();
+  // lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  // minuteCounter.SetValue(alarmController.Minutes());
+  // minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  // lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_label_set_text_static(colonLabel, ":");
   lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
 
@@ -107,20 +107,20 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
   lv_obj_t* txtInfo = lv_label_create(btnInfo, nullptr);
   lv_label_set_text_static(txtInfo, "i");
 
-  enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
-  enableSwitch->user_data = this;
-  lv_obj_set_event_cb(enableSwitch, btnEventHandler);
-  lv_obj_set_size(enableSwitch, 100, 50);
-  // Align to the center of 115px from edge
-  lv_obj_align(enableSwitch, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 7, 0);
-  lv_obj_set_style_local_bg_color(enableSwitch, LV_SWITCH_PART_BG, LV_STATE_DEFAULT, bgColor);
+  // enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
+  // enableSwitch->user_data = this;
+  // lv_obj_set_event_cb(enableSwitch, btnEventHandler);
+  // lv_obj_set_size(enableSwitch, 100, 50);
+  // // Align to the center of 115px from edge
+  // lv_obj_align(enableSwitch, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 7, 0);
+  // lv_obj_set_style_local_bg_color(enableSwitch, LV_SWITCH_PART_BG, LV_STATE_DEFAULT, bgColor);
 
-  UpdateAlarmTime();
+  // UpdateAlarmTime();
 
   if (alarmController.IsAlerting()) {
     SetAlerting();
   } else {
-    SetSwitchState(LV_ANIM_OFF);
+    // SetSwitchState(LV_ANIM_OFF);
   }
 }
 
@@ -135,7 +135,7 @@ Alarm::~Alarm() {
 void Alarm::DisableAlarm() {
   if (alarmController.IsEnabled()) {
     alarmController.DisableAlarm();
-    lv_switch_off(enableSwitch, LV_ANIM_ON);
+    // lv_switch_off(enableSwitch, LV_ANIM_ON);
   }
 }
 
@@ -153,14 +153,14 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       HideInfo();
       return;
     }
-    if (obj == enableSwitch) {
-      if (lv_switch_get_state(enableSwitch)) {
-        alarmController.ScheduleAlarm();
-      } else {
-        alarmController.DisableAlarm();
-      }
-      return;
-    }
+    // if (obj == enableSwitch) {
+    //   if (lv_switch_get_state(enableSwitch)) {
+    //     alarmController.ScheduleAlarm();
+    //   } else {
+    //     alarmController.DisableAlarm();
+    //   }
+    //   return;
+    // }
     if (obj == btnRecur) {
       DisableAlarm();
       ToggleRecurrence();
@@ -187,19 +187,19 @@ bool Alarm::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
 void Alarm::OnValueChanged() {
   DisableAlarm();
-  UpdateAlarmTime();
+  // UpdateAlarmTime();
 }
 
-void Alarm::UpdateAlarmTime() {
-  if (lblampm != nullptr) {
-    if (hourCounter.GetValue() >= 12) {
-      lv_label_set_text_static(lblampm, "PM");
-    } else {
-      lv_label_set_text_static(lblampm, "AM");
-    }
-  }
-  alarmController.SetAlarmTime(hourCounter.GetValue(), minuteCounter.GetValue());
-}
+// void Alarm::UpdateAlarmTime() {
+//   if (lblampm != nullptr) {
+//     if (hourCounter.GetValue() >= 12) {
+//       lv_label_set_text_static(lblampm, "PM");
+//     } else {
+//       lv_label_set_text_static(lblampm, "AM");
+//     }
+//   }
+//   alarmController.SetAlarmTime(hourCounter.GetValue(), minuteCounter.GetValue());
+// }
 
 void Alarm::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
@@ -212,7 +212,7 @@ void Alarm::SetAlerting() {
 void Alarm::StopAlerting() {
   alarmController.StopAlerting();
   motorController.StopRinging();
-  SetSwitchState(LV_ANIM_OFF);
+  // SetSwitchState(LV_ANIM_OFF);
   if (taskStopAlarm != nullptr) {
     lv_task_del(taskStopAlarm);
     taskStopAlarm = nullptr;
@@ -222,13 +222,13 @@ void Alarm::StopAlerting() {
   lv_obj_set_hidden(btnStop, true);
 }
 
-void Alarm::SetSwitchState(lv_anim_enable_t anim) {
-  if (alarmController.IsEnabled()) {
-    lv_switch_on(enableSwitch, anim);
-  } else {
-    lv_switch_off(enableSwitch, anim);
-  }
-}
+// void Alarm::SetSwitchState(lv_anim_enable_t anim) {
+//   if (alarmController.IsEnabled()) {
+//     lv_switch_on(enableSwitch, anim);
+//   } else {
+//     lv_switch_off(enableSwitch, anim);
+//   }
+// }
 
 void Alarm::ShowInfo() {
   if (btnMessage != nullptr) {

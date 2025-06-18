@@ -3,17 +3,17 @@
 #include "Controllers.h"
 
 #include "displayapp/screens/Alarm.h"
-#include "displayapp/screens/Dice.h"
-#include "displayapp/screens/Timer.h"
-#include "displayapp/screens/Twos.h"
-#include "displayapp/screens/Tile.h"
-#include "displayapp/screens/ApplicationList.h"
-#include "displayapp/screens/WatchFaceDigital.h"
-#include "displayapp/screens/WatchFaceAnalog.h"
-#include "displayapp/screens/WatchFaceCasioStyleG7710.h"
-#include "displayapp/screens/WatchFaceInfineat.h"
-#include "displayapp/screens/WatchFacePineTimeStyle.h"
-#include "displayapp/screens/WatchFaceTerminal.h"
+// #include "displayapp/screens/Dice.h"
+// #include "displayapp/screens/Timer.h"
+// #include "displayapp/screens/Twos.h"
+// #include "displayapp/screens/Tile.h"
+// #include "displayapp/screens/ApplicationList.h"
+// #include "displayapp/screens/WatchFaceDigital.h"
+#include "displayapp/screens/RoutineHeroWatchFace.h"
+// #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+// #include "displayapp/screens/WatchFaceInfineat.h"
+// #include "displayapp/screens/WatchFacePineTimeStyle.h"
+// #include "displayapp/screens/WatchFaceTerminal.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -23,13 +23,13 @@ namespace Pinetime {
 
     struct AppDescription {
       Apps app;
-      const char* icon;
+      // const char* icon;
       Screens::Screen* (*create)(AppControllers& controllers);
     };
 
     struct WatchFaceDescription {
       WatchFace watchFace;
-      const char* name;
+      // const char* name;
       Screens::Screen* (*create)(AppControllers& controllers);
       bool (*isAvailable)(Controllers::FS& fileSystem);
     };
@@ -41,7 +41,11 @@ namespace Pinetime {
 
     template <WatchFace t>
     consteval WatchFaceDescription CreateWatchFaceDescription() {
-      return {WatchFaceTraits<t>::watchFace, WatchFaceTraits<t>::name, &WatchFaceTraits<t>::Create, &WatchFaceTraits<t>::IsAvailable};
+      return {
+        WatchFaceTraits<t>::watchFace,
+        &WatchFaceTraits<t>::Create
+        // &WatchFaceTraits<t>::IsAvailable
+      };
     }
 
     template <template <Apps...> typename T, Apps... ts>
@@ -54,7 +58,7 @@ namespace Pinetime {
       return {CreateWatchFaceDescription<ts>()...};
     }
 
-    constexpr auto userApps = CreateAppDescriptions(UserAppTypes {});
+    // constexpr auto userApps = CreateAppDescriptions(UserAppTypes {});
     constexpr auto userWatchFaces = CreateWatchFaceDescriptions(UserWatchFaceTypes {});
   }
 }

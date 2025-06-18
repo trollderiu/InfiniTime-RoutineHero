@@ -10,6 +10,8 @@
 
 namespace Pinetime {
   namespace Controllers {
+    class DateTime;
+
     class MotionController {
     public:
       enum class DeviceTypes {
@@ -18,7 +20,9 @@ namespace Pinetime {
         BMA425,
       };
 
-      void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
+      // void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
+      // void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps, uint8_t hours, uint8_t minutes);
+      void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps, Controllers::DateTime& dateTimeController);
 
       int16_t X() const {
         return xHistory[0];

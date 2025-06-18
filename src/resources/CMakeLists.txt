@@ -18,9 +18,10 @@ endif()
 
 # generate fonts
 add_custom_target(GenerateResources
-    COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-fonts.py  --lv-font-conv "${LV_FONT_CONV}" ${CMAKE_CURRENT_SOURCE_DIR}/fonts.json
-    COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-img.py  --lv-img-conv "${LV_IMG_CONV}" ${CMAKE_CURRENT_SOURCE_DIR}/images.json
-    COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-package.py --config  ${CMAKE_CURRENT_SOURCE_DIR}/fonts.json --config  ${CMAKE_CURRENT_SOURCE_DIR}/images.json --obsolete obsolete_files.json --output infinitime-resources-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip
+    # COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-fonts.py  --lv-font-conv "${LV_FONT_CONV}" ${CMAKE_CURRENT_SOURCE_DIR}/fonts.json
+    COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-img.py  --lv-img-conv "${LV_IMG_CONV}" ${CMAKE_CURRENT_SOURCE_DIR}
+    # COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-package.py --config  ${CMAKE_CURRENT_SOURCE_DIR}/fonts.json --config  ${CMAKE_CURRENT_SOURCE_DIR}/images.json --obsolete obsolete_files.json --output infinitime-resources-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip
+    COMMAND "${Python3_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/generate-package.py --config  ${CMAKE_CURRENT_SOURCE_DIR}/images.json --obsolete obsolete_files.json --output infinitime-resources-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/fonts.json
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/images.json
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}

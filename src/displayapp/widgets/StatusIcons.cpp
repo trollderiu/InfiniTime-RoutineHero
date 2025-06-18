@@ -1,5 +1,5 @@
 #include "displayapp/widgets/StatusIcons.h"
-#include "displayapp/screens/Symbols.h"
+// #include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Widgets;
 
@@ -15,10 +15,13 @@ void StatusIcons::Create() {
   lv_obj_set_style_local_bg_opa(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
 
   bleIcon = lv_label_create(container, nullptr);
-  lv_label_set_text_static(bleIcon, Screens::Symbols::bluetooth);
+  // lv_label_set_text_static(bleIcon, Screens::Symbols::bluetooth);
+  lv_label_set_text_static(bleIcon, LV_SYMBOL_BLUETOOTH);
 
   batteryPlug = lv_label_create(container, nullptr);
-  lv_label_set_text_static(batteryPlug, Screens::Symbols::plug);
+  // lv_label_set_text_static(batteryPlug, Screens::Symbols::plug);
+  lv_label_set_text_static(batteryPlug, LV_SYMBOL_CHARGE);
+
 
   batteryIcon.Create(container);
 

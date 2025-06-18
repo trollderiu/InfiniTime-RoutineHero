@@ -8,6 +8,27 @@
 #include <FreeRTOS.h>
 #include <semphr.h>
 
+// #include <vector> //GetSchedule()
+
+// struct IntervalColor {
+//   int16_t start;
+//   int16_t end;
+//   uint8_t red;
+//   uint8_t green;
+//   uint8_t blue;
+//   uint8_t icon;
+// };
+
+// struct Data {
+//   int year;
+//   int month;
+//   int day;
+//   int weekend;
+//   int am_pm;
+//   std::vector<std::vector<int>> slices;
+// };
+
+
 namespace Pinetime {
   namespace System {
     class SystemTask;
@@ -138,6 +159,13 @@ namespace Pinetime {
       void SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t);
       std::string FormattedTime();
 
+      // std::vector<std::vector<IntervalColor>> GetClocks() const;
+      // std::vector<IntervalColor> GetSchedule(bool clock) const;
+      // mutable std::vector<std::vector<IntervalColor>> clocks;
+      // void SetAngle(uint16_t angle) const;
+      mutable uint16_t sAngle = -1;
+      mutable uint16_t sSlice = -1;
+
     private:
       void UpdateTime(uint32_t systickCounter, bool forceUpdate);
 
@@ -156,6 +184,13 @@ namespace Pinetime {
       bool isHalfHourAlreadyNotified = true;
       System::SystemTask* systemTask = nullptr;
       Controllers::Settings& settingsController;
+
+      // void LoadSettingsFromFile() const;
+      // void SaveSettingsToFile() const;
+
+      // std::vector<int> parseSlice(const std::string &sliceStr) const;
+      // std::vector<std::vector<int>> parseSlices(const std::string &slicesStr) const;
+      // Data parseLine(const std::string& line) const;
     };
   }
 }

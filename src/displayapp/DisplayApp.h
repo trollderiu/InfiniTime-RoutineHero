@@ -12,7 +12,7 @@
 #include "components/firmwarevalidator/FirmwareValidator.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
-#include "components/timer/Timer.h"
+// #include "components/timer/Timer.h"
 #include "components/alarm/AlarmController.h"
 #include "touchhandler/TouchHandler.h"
 
@@ -39,7 +39,7 @@ namespace Pinetime {
     class HeartRateController;
     class MotionController;
     class TouchHandler;
-    class SimpleWeatherService;
+    // class SimpleWeatherService;
   }
 
   namespace System {
@@ -51,6 +51,7 @@ namespace Pinetime {
     public:
       enum class States { Idle, Running, AOD };
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
+      // enum class FullRefreshDirections { None, Left, Right };
 
       DisplayApp(Drivers::St7789& lcd,
                  const Drivers::Cst816S&,
@@ -74,11 +75,17 @@ namespace Pinetime {
       void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
 
       void SetFullRefresh(FullRefreshDirections direction);
+      // void LoadCurrentActivity(Apps app);
 
       void Register(Pinetime::System::SystemTask* systemTask);
-      void Register(Pinetime::Controllers::SimpleWeatherService* weatherService);
-      void Register(Pinetime::Controllers::MusicService* musicService);
-      void Register(Pinetime::Controllers::NavigationService* NavigationService);
+      // void Register(Pinetime::Controllers::SimpleWeatherService* weatherService);
+      // void Register(Pinetime::Controllers::MusicService* musicService);
+      // void Register(Pinetime::Controllers::NavigationService* NavigationService);
+
+      States state = States::Running;
+      void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
+      void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
+      void RedirectPreviousScreen();
 
     private:
       Pinetime::Drivers::St7789& lcd;
@@ -101,12 +108,11 @@ namespace Pinetime {
 
       Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;
-      Pinetime::Controllers::Timer timer;
+      // Pinetime::Controllers::Timer timer;
 
       AppControllers controllers;
       TaskHandle_t taskHandle;
 
-      States state = States::Running;
       QueueHandle_t msgQueue;
 
       static constexpr uint8_t queueSize = 10;
@@ -123,8 +129,6 @@ namespace Pinetime {
       static void Process(void* instance);
       void InitHw();
       void Refresh();
-      void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
-      void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);
 
       Apps nextApp = Apps::None;

@@ -1,6 +1,6 @@
 #include "displayapp/screens/BatteryIcon.h"
 #include <cstdint>
-#include "displayapp/screens/Symbols.h"
+// #include "displayapp/screens/Symbols.h"
 #include "displayapp/icons/battery/batteryicon.c"
 #include "displayapp/InfiniTimeTheme.h"
 
@@ -17,6 +17,7 @@ void BatteryIcon::Create(lv_obj_t* parent) {
   lv_obj_set_width(batteryJuice, 8);
   lv_obj_align(batteryJuice, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -2, -2);
   lv_obj_set_style_local_radius(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_bg_opa(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
 }
 
 lv_obj_t* BatteryIcon::GetObject() {
@@ -30,7 +31,7 @@ void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
     static constexpr int lowBatteryThreshold = 15;
     static constexpr int criticalBatteryThreshold = 5;
     if (percentage > lowBatteryThreshold) {
-      SetColor(LV_COLOR_WHITE);
+      SetColor(LV_COLOR_SILVER);
     } else if (percentage > criticalBatteryThreshold) {
       SetColor(LV_COLOR_ORANGE);
     } else {
@@ -47,7 +48,8 @@ void BatteryIcon::SetColor(lv_color_t color) {
 
 const char* BatteryIcon::GetPlugIcon(bool isCharging) {
   if (isCharging)
-    return Symbols::plug;
+    // return Symbols::plug;
+    return LV_SYMBOL_CHARGE;
   else
     return "";
 }

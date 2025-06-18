@@ -27,9 +27,9 @@ namespace Pinetime {
 
       int OnAlert(struct ble_gatt_access_ctxt* ctxt);
 
-      void AcceptIncomingCall();
+      // void AcceptIncomingCall();
       void RejectIncomingCall();
-      void MuteIncomingCall();
+      // void MuteIncomingCall();
 
       enum class IncomingCallResponses : uint8_t { Reject = 0x00, Answer = 0x01, Mute = 0x02 };
 

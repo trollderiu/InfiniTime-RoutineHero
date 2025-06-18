@@ -1,6 +1,6 @@
 #include "components/brightness/BrightnessController.h"
 #include <hal/nrf_gpio.h>
-#include "displayapp/screens/Symbols.h"
+// #include "displayapp/screens/Symbols.h"
 #include "drivers/PinMap.h"
 #include <libraries/delay/nrf_delay.h>
 using namespace Pinetime::Controllers;
@@ -190,17 +190,17 @@ void BrightnessController::Step() {
   }
 }
 
-const char* BrightnessController::GetIcon() {
-  switch (level) {
-    case Levels::Medium:
-      return Applications::Screens::Symbols::brightnessMedium;
-    case Levels::High:
-      return Applications::Screens::Symbols::brightnessHigh;
-    default:
-      break;
-  }
-  return Applications::Screens::Symbols::brightnessLow;
-}
+// const char* BrightnessController::GetIcon() {
+//   switch (level) {
+//     case Levels::Medium:
+//       return Applications::Screens::Symbols::brightnessMedium;
+//     case Levels::High:
+//       return Applications::Screens::Symbols::brightnessHigh;
+//     default:
+//       break;
+//   }
+//   return Applications::Screens::Symbols::brightnessLow;
+// }
 
 const char* BrightnessController::ToString() {
   switch (level) {

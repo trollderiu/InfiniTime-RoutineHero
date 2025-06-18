@@ -179,7 +179,7 @@ set(LVGL_SRC
         libs/lvgl/lvgl.h
 
         libs/lvgl/src/lvgl.h
-        libs/lvgl/src/lv_api_map.h
+        # libs/lvgl/src/lv_api_map.h
         libs/lvgl/src/lv_conf_internal.h
         libs/lvgl/src/lv_core/lv_disp.h
         libs/lvgl/src/lv_core/lv_group.h
@@ -190,13 +190,14 @@ set(LVGL_SRC
         libs/lvgl/src/lv_core/lv_style.h
         libs/lvgl/src/lv_draw/lv_draw.h
         libs/lvgl/src/lv_draw/lv_draw_arc.h
+        libs/lvgl/src/lv_draw/lv_draw_pie.h
         libs/lvgl/src/lv_draw/lv_draw_blend.h
         libs/lvgl/src/lv_draw/lv_draw_img.h
         libs/lvgl/src/lv_draw/lv_draw_label.h
         libs/lvgl/src/lv_draw/lv_draw_line.h
         libs/lvgl/src/lv_draw/lv_draw_mask.h
         libs/lvgl/src/lv_draw/lv_draw_rect.h
-        libs/lvgl/src/lv_draw/lv_draw_triangle.h
+        # libs/lvgl/src/lv_draw/lv_draw_triangle.h
         libs/lvgl/src/lv_draw/lv_img_buf.h
         libs/lvgl/src/lv_draw/lv_img_cache.h
         libs/lvgl/src/lv_draw/lv_img_decoder.h
@@ -210,7 +211,7 @@ set(LVGL_SRC
         libs/lvgl/src/lv_hal/lv_hal_tick.h
         libs/lvgl/src/lv_misc/lv_anim.h
         libs/lvgl/src/lv_misc/lv_area.h
-        libs/lvgl/src/lv_misc/lv_async.h
+        # libs/lvgl/src/lv_misc/lv_async.h
         libs/lvgl/src/lv_misc/lv_bidi.h
         libs/lvgl/src/lv_misc/lv_color.h
         libs/lvgl/src/lv_misc/lv_debug.h
@@ -233,38 +234,33 @@ set(LVGL_SRC
         #libs/lvgl/src/lv_themes/lv_theme_mono.h
         #libs/lvgl/src/lv_themes/lv_theme_template.h
         libs/lvgl/src/lv_widgets/lv_arc.h
+        libs/lvgl/src/lv_widgets/lv_pie.h
         libs/lvgl/src/lv_widgets/lv_bar.h
         libs/lvgl/src/lv_widgets/lv_btn.h
-        libs/lvgl/src/lv_widgets/lv_btnmatrix.h
-        libs/lvgl/src/lv_widgets/lv_calendar.h
+        #libs/lvgl/src/lv_widgets/lv_btnmatrix.h
         libs/lvgl/src/lv_widgets/lv_canvas.h
-        libs/lvgl/src/lv_widgets/lv_chart.h
-        libs/lvgl/src/lv_widgets/lv_checkbox.h
+        #libs/lvgl/src/lv_widgets/lv_chart.h
+        #libs/lvgl/src/lv_widgets/lv_checkbox.h
         libs/lvgl/src/lv_widgets/lv_cont.h
-        libs/lvgl/src/lv_widgets/lv_cpicker.h
-        libs/lvgl/src/lv_widgets/lv_dropdown.h
+        #libs/lvgl/src/lv_widgets/lv_cpicker.h
+        #libs/lvgl/src/lv_widgets/lv_dropdown.h
         libs/lvgl/src/lv_widgets/lv_gauge.h
         libs/lvgl/src/lv_widgets/lv_img.h
-        libs/lvgl/src/lv_widgets/lv_imgbtn.h
-        libs/lvgl/src/lv_widgets/lv_keyboard.h
+        libs/lvgl/src/lv_widgets/lv_icon.h
         libs/lvgl/src/lv_widgets/lv_label.h
         libs/lvgl/src/lv_widgets/lv_led.h
         libs/lvgl/src/lv_widgets/lv_line.h
         libs/lvgl/src/lv_widgets/lv_linemeter.h
-        libs/lvgl/src/lv_widgets/lv_list.h
-        libs/lvgl/src/lv_widgets/lv_msgbox.h
+        #libs/lvgl/src/lv_widgets/lv_list.h
+        #libs/lvgl/src/lv_widgets/lv_msgbox.h
         libs/lvgl/src/lv_widgets/lv_objmask.h
-        libs/lvgl/src/lv_widgets/lv_objx_templ.h
+        #libs/lvgl/src/lv_widgets/lv_objx_templ.h
         libs/lvgl/src/lv_widgets/lv_page.h
-        libs/lvgl/src/lv_widgets/lv_roller.h
-        libs/lvgl/src/lv_widgets/lv_slider.h
-        libs/lvgl/src/lv_widgets/lv_spinbox.h
-        libs/lvgl/src/lv_widgets/lv_spinner.h
-        libs/lvgl/src/lv_widgets/lv_switch.h
-        libs/lvgl/src/lv_widgets/lv_table.h
-        libs/lvgl/src/lv_widgets/lv_tabview.h
-        libs/lvgl/src/lv_widgets/lv_textarea.h
-        libs/lvgl/src/lv_widgets/lv_tileview.h
+        #libs/lvgl/src/lv_widgets/lv_spinner.h
+        #libs/lvgl/src/lv_widgets/lv_table.h
+        #libs/lvgl/src/lv_widgets/lv_tabview.h
+        #libs/lvgl/src/lv_widgets/lv_textarea.h
+        #libs/lvgl/src/lv_widgets/lv_tileview.h
         libs/lvgl/src/lv_widgets/lv_win.h
         libs/lvgl/src/lv_core/lv_disp.c
         libs/lvgl/src/lv_core/lv_group.c
@@ -273,13 +269,14 @@ set(LVGL_SRC
         libs/lvgl/src/lv_core/lv_refr.c
         libs/lvgl/src/lv_core/lv_style.c
         libs/lvgl/src/lv_draw/lv_draw_arc.c
+        libs/lvgl/src/lv_draw/lv_draw_pie.c
         libs/lvgl/src/lv_draw/lv_draw_blend.c
         libs/lvgl/src/lv_draw/lv_draw_img.c
         libs/lvgl/src/lv_draw/lv_draw_label.c
         libs/lvgl/src/lv_draw/lv_draw_line.c
         libs/lvgl/src/lv_draw/lv_draw_mask.c
         libs/lvgl/src/lv_draw/lv_draw_rect.c
-        libs/lvgl/src/lv_draw/lv_draw_triangle.c
+        # libs/lvgl/src/lv_draw/lv_draw_triangle.c
         libs/lvgl/src/lv_draw/lv_img_buf.c
         libs/lvgl/src/lv_draw/lv_img_cache.c
         libs/lvgl/src/lv_draw/lv_img_decoder.c
@@ -288,17 +285,18 @@ set(LVGL_SRC
         libs/lvgl/src/lv_font/lv_font_fmt_txt.c
         libs/lvgl/src/lv_font/lv_font_loader.c
         # LVGL Fonts
-        libs/lvgl/src/lv_font/lv_font_montserrat_14.c
-        libs/lvgl/src/lv_font/lv_font_montserrat_18.c
-        libs/lvgl/src/lv_font/lv_font_montserrat_22.c
-        libs/lvgl/src/lv_font/lv_font_montserrat_28.c
+        libs/lvgl/src/lv_font/lv_font_montserrat_12.c
+        libs/lvgl/src/lv_font/lv_font_montserrat_16.c
+        #libs/lvgl/src/lv_font/lv_font_montserrat_18.c
+        #libs/lvgl/src/lv_font/lv_font_montserrat_22.c
+        #libs/lvgl/src/lv_font/lv_font_montserrat_28.c
         #
         libs/lvgl/src/lv_hal/lv_hal_disp.c
         libs/lvgl/src/lv_hal/lv_hal_indev.c
         libs/lvgl/src/lv_hal/lv_hal_tick.c
         libs/lvgl/src/lv_misc/lv_anim.c
         libs/lvgl/src/lv_misc/lv_area.c
-        libs/lvgl/src/lv_misc/lv_async.c
+        # libs/lvgl/src/lv_misc/lv_async.c
         libs/lvgl/src/lv_misc/lv_bidi.c
         libs/lvgl/src/lv_misc/lv_color.c
         libs/lvgl/src/lv_misc/lv_debug.c
@@ -320,112 +318,90 @@ set(LVGL_SRC
         #libs/lvgl/src/lv_themes/lv_theme_mono.c
         #libs/lvgl/src/lv_themes/lv_theme_template.c
         libs/lvgl/src/lv_widgets/lv_arc.c
+        libs/lvgl/src/lv_widgets/lv_pie.c
         libs/lvgl/src/lv_widgets/lv_bar.c
         libs/lvgl/src/lv_widgets/lv_btn.c
-        libs/lvgl/src/lv_widgets/lv_btnmatrix.c
-        libs/lvgl/src/lv_widgets/lv_calendar.c
+        #libs/lvgl/src/lv_widgets/lv_btnmatrix.c
         libs/lvgl/src/lv_widgets/lv_canvas.c
-        libs/lvgl/src/lv_widgets/lv_chart.c
-        libs/lvgl/src/lv_widgets/lv_checkbox.c
+        #libs/lvgl/src/lv_widgets/lv_chart.c
+        #libs/lvgl/src/lv_widgets/lv_checkbox.c
         libs/lvgl/src/lv_widgets/lv_cont.c
-        libs/lvgl/src/lv_widgets/lv_cpicker.c
-        libs/lvgl/src/lv_widgets/lv_dropdown.c
+        #libs/lvgl/src/lv_widgets/lv_cpicker.c
         libs/lvgl/src/lv_widgets/lv_gauge.c
         libs/lvgl/src/lv_widgets/lv_img.c
-        libs/lvgl/src/lv_widgets/lv_imgbtn.c
-        libs/lvgl/src/lv_widgets/lv_keyboard.c
+        #libs/lvgl/src/lv_widgets/lv_icon.c
         libs/lvgl/src/lv_widgets/lv_label.c
         libs/lvgl/src/lv_widgets/lv_led.c
         libs/lvgl/src/lv_widgets/lv_line.c
         libs/lvgl/src/lv_widgets/lv_linemeter.c
-        libs/lvgl/src/lv_widgets/lv_list.c
-        libs/lvgl/src/lv_widgets/lv_msgbox.c
+        #libs/lvgl/src/lv_widgets/lv_list.c
+        #libs/lvgl/src/lv_widgets/lv_msgbox.c
         libs/lvgl/src/lv_widgets/lv_objmask.c
-        libs/lvgl/src/lv_widgets/lv_objx_templ.c
+        #libs/lvgl/src/lv_widgets/lv_objx_templ.c
         libs/lvgl/src/lv_widgets/lv_page.c
-        libs/lvgl/src/lv_widgets/lv_roller.c
-        libs/lvgl/src/lv_widgets/lv_slider.c
-        libs/lvgl/src/lv_widgets/lv_spinbox.c
-        libs/lvgl/src/lv_widgets/lv_spinner.c
-        libs/lvgl/src/lv_widgets/lv_switch.c
-        libs/lvgl/src/lv_widgets/lv_table.c
-        libs/lvgl/src/lv_widgets/lv_tabview.c
-        libs/lvgl/src/lv_widgets/lv_textarea.c
-        libs/lvgl/src/lv_widgets/lv_tileview.c
+        #libs/lvgl/src/lv_widgets/lv_spinner.c
+        #libs/lvgl/src/lv_widgets/lv_table.c
+        #libs/lvgl/src/lv_widgets/lv_tabview.c
+        #libs/lvgl/src/lv_widgets/lv_textarea.c
+        #libs/lvgl/src/lv_widgets/lv_tileview.c
         libs/lvgl/src/lv_widgets/lv_win.c
         )
 
 list(APPEND IMAGE_FILES
         displayapp/icons/battery/batteryicon.c
+        displayapp/icons/arrow/arrowicon.c
+        displayapp/icons/arrow/arrowtimer.c
         )
 list(APPEND SOURCE_FILES
         stdlib.c
-        FreeRTOS/heap_4_infinitime.c
+        FreeRTOS/heap_4_routinehero.c
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
         displayapp/screens/Screen.cpp
-        displayapp/screens/Tile.cpp
-        displayapp/screens/InfiniPaint.cpp
-        displayapp/screens/Paddle.cpp
-        displayapp/screens/StopWatch.cpp
+        # displayapp/screens/Tile.cpp
+        # displayapp/screens/InfiniPaint.cpp
+        # displayapp/screens/Paddle.cpp
+        # displayapp/screens/StopWatch.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
-        displayapp/screens/NotificationIcon.cpp
-        displayapp/screens/SystemInfo.cpp
-        displayapp/screens/Label.cpp
+        # displayapp/screens/SystemInfo.cpp
+        # displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
-        displayapp/screens/Music.cpp
-        displayapp/screens/Navigation.cpp
-        displayapp/screens/Metronome.cpp
-        displayapp/screens/Motion.cpp
-        displayapp/screens/Weather.cpp
-        displayapp/screens/FirmwareValidation.cpp
-        displayapp/screens/ApplicationList.cpp
+        # displayapp/screens/Music.cpp
+        # displayapp/screens/Navigation.cpp
+        # displayapp/screens/Metronome.cpp
+        # displayapp/screens/Motion.cpp
+        # displayapp/screens/Weather.cpp
+        # displayapp/screens/FirmwareValidation.cpp
+        # displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
-        displayapp/screens/Twos.cpp
-        displayapp/screens/HeartRate.cpp
-        displayapp/screens/FlashLight.cpp
-        displayapp/screens/List.cpp
-        displayapp/screens/CheckboxList.cpp
-        displayapp/screens/BatteryInfo.cpp
-        displayapp/screens/Steps.cpp
-        displayapp/screens/Timer.cpp
-        displayapp/screens/Dice.cpp
+        # displayapp/screens/Twos.cpp
+        # displayapp/screens/HeartRate.cpp
+        # displayapp/screens/FlashLight.cpp
+        # displayapp/screens/List.cpp
+        # displayapp/screens/CheckboxList.cpp
+        # displayapp/screens/BatteryInfo.cpp
+        # displayapp/screens/Steps.cpp
+        displayapp/screens/RoutineHeroTimer.cpp
+        # displayapp/screens/Dice.cpp
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
-        displayapp/screens/Styles.cpp
-        displayapp/screens/WeatherSymbols.cpp
-        displayapp/Colors.cpp
-        displayapp/widgets/Counter.cpp
-        displayapp/widgets/PageIndicator.cpp
-        displayapp/widgets/DotIndicator.cpp
+        # displayapp/screens/Styles.cpp
+        # displayapp/screens/WeatherSymbols.cpp
+        # displayapp/Colors.cpp
+        # displayapp/widgets/Counter.cpp
+        # displayapp/widgets/PageIndicator.cpp
+        # displayapp/widgets/DotIndicator.cpp
         displayapp/widgets/StatusIcons.cpp
 
         ## Settings
-        displayapp/screens/settings/QuickSettings.cpp
-        displayapp/screens/settings/Settings.cpp
-        displayapp/screens/settings/SettingWatchFace.cpp
-        displayapp/screens/settings/SettingTimeFormat.cpp
-        displayapp/screens/settings/SettingWeatherFormat.cpp
-        displayapp/screens/settings/SettingWakeUp.cpp
-        displayapp/screens/settings/SettingDisplay.cpp
-        displayapp/screens/settings/SettingSteps.cpp
-        displayapp/screens/settings/SettingSetDateTime.cpp
-        displayapp/screens/settings/SettingSetDate.cpp
-        displayapp/screens/settings/SettingSetTime.cpp
-        displayapp/screens/settings/SettingChimes.cpp
-        displayapp/screens/settings/SettingShakeThreshold.cpp
-        displayapp/screens/settings/SettingBluetooth.cpp
+        # displayapp/screens/settings/SettingSteps.cpp
 
         ## Watch faces
-        displayapp/screens/WatchFaceAnalog.cpp
-        displayapp/screens/WatchFaceDigital.cpp
-        displayapp/screens/WatchFaceInfineat.cpp
-        displayapp/screens/WatchFaceTerminal.cpp
-        displayapp/screens/WatchFacePineTimeStyle.cpp
-        displayapp/screens/WatchFaceCasioStyleG7710.cpp
+        displayapp/screens/RoutineHeroWatchFace.cpp
+        # displayapp/screens/WatchFaceTerminal.cpp
 
         ##
 
@@ -453,9 +429,9 @@ list(APPEND SOURCE_FILES
         components/ble/DfuService.cpp
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
-        components/ble/MusicService.cpp
-        components/ble/SimpleWeatherService.cpp
-        components/ble/NavigationService.cpp
+        # components/ble/MusicService.cpp
+        # components/ble/SimpleWeatherService.cpp
+        # components/ble/NavigationService.cpp
         components/ble/BatteryInformationService.cpp
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
@@ -465,7 +441,7 @@ list(APPEND SOURCE_FILES
         components/firmwarevalidator/FirmwareValidator.cpp
         components/motor/MotorController.cpp
         components/settings/Settings.cpp
-        components/timer/Timer.cpp
+        # components/timer/Timer.cpp
         components/alarm/AlarmController.cpp
         components/fs/FS.cpp
         drivers/Cst816s.cpp
@@ -493,7 +469,7 @@ list(APPEND SOURCE_FILES
 
 list(APPEND RECOVERY_SOURCE_FILES
         stdlib.c
-        FreeRTOS/heap_4_infinitime.c
+        FreeRTOS/heap_4_routinehero.c
 
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
@@ -523,18 +499,18 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/DfuService.cpp
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
-        components/ble/MusicService.cpp
-        components/ble/SimpleWeatherService.cpp
+        # components/ble/MusicService.cpp
+        # components/ble/SimpleWeatherService.cpp
         components/ble/BatteryInformationService.cpp
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
-        components/ble/NavigationService.cpp
+        # components/ble/NavigationService.cpp
         components/ble/HeartRateService.cpp
         components/ble/MotionService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         components/settings/Settings.cpp
-        components/timer/Timer.cpp
+        # components/timer/Timer.cpp
         components/alarm/AlarmController.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
@@ -560,7 +536,7 @@ list(APPEND RECOVERY_SOURCE_FILES
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
         stdlib.c
-        FreeRTOS/heap_4_infinitime.c
+        FreeRTOS/heap_4_routinehero.c
 
         # FreeRTOS
         FreeRTOS/port.c
@@ -591,32 +567,24 @@ set(INCLUDE_FILES
         displayapp/Messages.h
         displayapp/TouchEvents.h
         displayapp/screens/Screen.h
-        displayapp/screens/Tile.h
-        displayapp/screens/InfiniPaint.h
-        displayapp/screens/StopWatch.h
-        displayapp/screens/Paddle.h
+        # displayapp/screens/Tile.h
+        # displayapp/screens/InfiniPaint.h
         displayapp/screens/BatteryIcon.h
         displayapp/screens/BleIcon.h
-        displayapp/screens/NotificationIcon.h
-        displayapp/screens/SystemInfo.h
-        displayapp/screens/ScreenList.h
-        displayapp/screens/Label.h
+        # displayapp/screens/SystemInfo.h
+        # displayapp/screens/ScreenList.h
+        # displayapp/screens/Label.h
         displayapp/screens/FirmwareUpdate.h
-        displayapp/screens/FirmwareValidation.h
-        displayapp/screens/ApplicationList.h
-        displayapp/screens/CheckboxList.h
-        displayapp/Apps.h
-        displayapp/screens/Notifications.h
-        displayapp/screens/HeartRate.h
-        displayapp/screens/Metronome.h
-        displayapp/screens/Motion.h
-        displayapp/screens/Timer.h
-        displayapp/screens/Dice.h
+        # displayapp/screens/FirmwareValidation.h
+        # displayapp/screens/ApplicationList.h
+        # displayapp/screens/CurrentActivity.h
+        displayapp/screens/RoutineHeroTimer.h
+        # displayapp/screens/Dice.h
         displayapp/screens/Alarm.h
-        displayapp/Colors.h
-        displayapp/widgets/Counter.h
-        displayapp/widgets/PageIndicator.h
-        displayapp/widgets/DotIndicator.h
+        # displayapp/Colors.h
+        # displayapp/widgets/Counter.h
+        # displayapp/widgets/PageIndicator.h
+        # displayapp/widgets/DotIndicator.h
         displayapp/widgets/StatusIcons.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
@@ -651,9 +619,9 @@ set(INCLUDE_FILES
         components/ble/BleClient.h
         components/ble/HeartRateService.h
         components/ble/MotionService.h
-        components/ble/SimpleWeatherService.h
+        # components/ble/SimpleWeatherService.h
         components/settings/Settings.h
-        components/timer/Timer.h
+        # components/timer/Timer.h
         components/alarm/AlarmController.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
@@ -663,7 +631,7 @@ set(INCLUDE_FILES
         systemtask/SystemTask.h
         systemtask/SystemMonitor.h
         systemtask/WakeLock.h
-        displayapp/screens/Symbols.h
+        # displayapp/screens/Symbols.h
         drivers/TwiMaster.h
         heartratetask/HeartRateTask.h
         components/heartrate/Ppg.h
@@ -842,14 +810,14 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   # add_definitions(-DMYNEWT_VAL_BLE_HS_LOG_LVL=0)
 endif()
 
-add_subdirectory(displayapp/fonts)
-target_compile_options(infinitime_fonts PUBLIC
-        ${COMMON_FLAGS}
-        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
-        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
-        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
-        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        )
+# add_subdirectory(displayapp/fonts)
+# target_compile_options(routinehero_fonts PUBLIC
+#         ${COMMON_FLAGS}
+#         $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+#         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+#         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+#         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
+#         )
 
 add_subdirectory(displayapp/apps)
 
@@ -907,7 +875,8 @@ set(EXECUTABLE_FILE_NAME ${EXECUTABLE_NAME}-${pinetime_VERSION_MAJOR}.${pinetime
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
-target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs infinitime_fonts infinitime_apps)
+# target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs routinehero_fonts routinehero_apps)
+target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs routinehero_apps)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
         ${COMMON_FLAGS}
         ${WARNING_FLAGS}
@@ -941,7 +910,8 @@ set(IMAGE_MCUBOOT_FILE_NAME_BIN ${EXECUTABLE_MCUBOOT_NAME}-image-${pinetime_VERS
 set(DFU_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs infinitime_fonts infinitime_apps)
+# target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs routinehero_fonts routinehero_apps)
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs routinehero_apps)
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
         ${COMMON_FLAGS}
@@ -979,11 +949,12 @@ if(BUILD_DFU)
           )
 endif()
 
-# InfiniTime recovery firmware (autonomous)
+# recovery firmware (autonomous)
 set(EXECUTABLE_RECOVERY_NAME "pinetime-recovery")
 set(EXECUTABLE_RECOVERY_FILE_NAME ${EXECUTABLE_RECOVERY_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 add_executable(${EXECUTABLE_RECOVERY_NAME} ${RECOVERY_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs infinitime_fonts infinitime_apps)
+# target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs routinehero_fonts routinehero_apps)
+target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs routinehero_apps)
 set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_NAME} PUBLIC
@@ -1008,14 +979,15 @@ add_custom_command(TARGET ${EXECUTABLE_RECOVERY_NAME}
         COMMENT "post build steps for ${EXECUTABLE_RECOVERY_FILE_NAME}"
         )
 
-# InfiniTime recovery firmware (mcuboot)
+# RoutineHero recovery firmware (mcuboot)
 set(EXECUTABLE_RECOVERY_MCUBOOT_NAME "pinetime-mcuboot-recovery")
 set(EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 set(IMAGE_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 set(IMAGE_RECOVERY_MCUBOOT_FILE_NAME_HEX ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME}.hex)
 set(DFU_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 add_executable(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} ${RECOVERY_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlefs infinitime_fonts infinitime_apps)
+# target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlefs routinehero_fonts routinehero_apps)
+target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlefs routinehero_apps)
 set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC
@@ -1055,7 +1027,8 @@ endif()
 set(EXECUTABLE_RECOVERYLOADER_NAME "pinetime-recovery-loader")
 set(EXECUTABLE_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_RECOVERYLOADER_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 add_executable(${EXECUTABLE_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk infinitime_fonts infinitime_apps)
+# target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk routinehero_fonts routinehero_apps)
+target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk routinehero_apps)
 set_target_properties(${EXECUTABLE_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
         ${COMMON_FLAGS}
@@ -1090,7 +1063,8 @@ set(IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_N
 set(IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME_HEX ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.hex)
 set(DFU_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 add_executable(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk infinitime_fonts infinitime_apps)
+# target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk routinehero_fonts routinehero_apps)
+target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk routinehero_apps)
 set_target_properties(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
         ${COMMON_FLAGS}
@@ -1132,4 +1106,3 @@ endif()
 if(BUILD_RESOURCES)
   add_subdirectory(resources)
 endif()
-
