@@ -51,5 +51,4 @@ src/arm-none-eabi
 # clangd
 .cache/
 
-doc
 myenv
