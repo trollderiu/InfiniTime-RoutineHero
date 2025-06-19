@@ -76,9 +76,9 @@ This app lets you:
 
 ---
 
-### Building from source (optional)
+### 🛠 Building from Source (Optional)
 
-If you want to build the firmware yourself:
+Want to build or customize the firmware yourself?
 
 1. **Clone the Repo**
    ```bash
