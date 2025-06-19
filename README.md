@@ -61,6 +61,21 @@ RoutineHero runs on devices compatible with InfiniTime, including:
 
 ---
 
+### 📱 Configure Your Child’s Routine
+
+After flashing the watch, use the official **RoutineHero Parent App** to set up daily routines and activities:
+
+➡️ [**Download from Google Play**](https://play.google.com/store/apps/details?id=com.routinehero)
+
+This app lets you:
+- Create and manage a daily schedule
+- Set icons, names, and durations for each task
+- Sync routines wirelessly to the watch
+
+*iOS support is planned for the future.*
+
+---
+
 ### Building from source (optional)
 
 If you want to build the firmware yourself:
