@@ -47,6 +47,24 @@ RoutineHero runs on devices compatible with InfiniTime, including:
 
 ## 🚀 Getting Started
 
+### Easiest way: Flash the pre-built DFU file
+
+1. Download the latest DFU package from the repo:  
+   [`doc/dfu/pinetime-mcuboot-app-dfu-1.15.0.zip`](doc/dfu/pinetime-mcuboot-app-dfu-1.15.0.zip)
+
+2. Use a Bluetooth Low Energy (BLE) capable DFU tool to flash the firmware to your PineTime device, for example:
+   - [Watchmate for Linux (works great for me)](https://github.com/azymohliad/watchmate)  
+   - [nRF Connect (mobile app)](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-mobile)  
+   - [nRF Connect for Desktop](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop)
+
+3. Follow the instructions in the DFU tool to upload the firmware to your watch over BLE.
+
+---
+
+### Building from source (optional)
+
+If you want to build the firmware yourself:
+
 1. **Clone the Repo**
    ```bash
    git clone https://github.com/trollderiu/InfiniTime-RoutineHero.git
@@ -62,7 +80,6 @@ RoutineHero runs on devices compatible with InfiniTime, including:
 
 3. **Flash to Device**  
    Use your preferred method (DFU, SWD, etc.) to upload to your PineTime or compatible hardware.
-   (Watchmate for Linux works great!)
 
 ---
 
