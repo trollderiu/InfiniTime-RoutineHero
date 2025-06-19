@@ -1,5 +1,7 @@
 
-# ⌚ RoutineHero – A Custom Smartwatch Experience for Kids
+![Header Image](doc/img/header.jpg)
+
+# ⌚ RoutineHero – A Smartwatch Experience for Kids
 
 > **Forked from [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)**  
 > Full credit and thanks to the original InfiniTime team for their amazing open-source smartwatch firmware project!
@@ -53,9 +55,14 @@ RoutineHero runs on devices compatible with InfiniTime, including:
 
 2. **Build the Firmware**  
    Follow the [InfiniTime build instructions](https://github.com/InfiniTimeOrg/InfiniTime#building-the-firmware), as they apply here too.
+   ```bash
+   docker pull --platform linux/amd64 infinitime/infinitime-build
+   docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime/infinitime-build
+   ```
 
 3. **Flash to Device**  
    Use your preferred method (DFU, SWD, etc.) to upload to your PineTime or compatible hardware.
+   (Watchmate for Linux works great!)
 
 ---
 
