@@ -1,111 +1,93 @@
-<div align="center">
 
-![Header Image](doc/logo/watchface_collage.png)
+# ⌚ RoutineHero – A Custom Smartwatch Experience for Kids
 
-<br>
+> **Forked from [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)**  
+> Full credit and thanks to the original InfiniTime team for their amazing open-source smartwatch firmware project!
 
-[![GitHub tag](https://img.shields.io/github/tag/InfiniTimeOrg/InfiniTime?include_prereleases=&sort=semver&color=blue)](https://github.com/InfiniTimeOrg/InfiniTime/releases)
-[![GitHub License](https://img.shields.io/github/license/InfiniTimeOrg/InfiniTime)](https://github.com/InfiniTimeOrg/InfiniLink/blob/main/LICENSE)
-[![Issues - InfiniTime](https://img.shields.io/github/issues/InfiniTimeOrg/InfiniTime)](https://github.com/InfiniTimeOrg/InfiniTime/issues)
-[![Pull Requests - InfiniTime](https://img.shields.io/github/issues-pr/InfiniTimeOrg/InfiniTime)](https://github.com/InfiniTimeOrg/InfiniTime/pulls)
-[![Downloads - InfiniTime](https://img.shields.io/github/downloads/InfiniTimeOrg/InfiniTime/total)](https://github.com/InfiniTimeOrg/InfiniTime)
-[![Stars - InfiniTime](https://img.shields.io/github/stars/InfiniTimeOrg/InfiniTime?style=social)](https://github.com/InfiniTimeOrg/InfiniTime/stargazers)
-[![Forks - InfiniTime](https://img.shields.io/github/forks/InfiniTimeOrg/InfiniTime?style=social)](https://github.com/InfiniTimeOrg/InfiniTime/network/members)
+---
 
-# InfiniTime
+## 📘 About
 
-*Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devices/pinetime/) with many features, written in modern C++.*
+**RoutineHero** is a fun and structured smartwatch experience built for kids, based on the InfiniTime firmware.  
+As a parent, you define a daily routine made up of activities — like brushing teeth, reading, playtime, etc. — and the watch guides your child throughout the day.
 
-<br>
+RoutineHero displays these activities visually as **segments on a pie chart over an analog-style clock face**, giving kids a sense of time and structure in a playful and intuitive way.
 
-</div>
+---
 
-## New to InfiniTime?
+## 🎯 Key Features
 
-- [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
-- [Updating the software](doc/gettingStarted/updating-software.md)
-- [About the firmware and bootloader](doc/gettingStarted/about-software.md)
-- [Available apps](doc/gettingStarted/Applications.md)
-- [Available watch faces](/doc/gettingStarted/Watchfaces.md)
-- [PineTimeStyle Watch face](https://pine64.org/documentation/PineTime/Watchfaces/PineTimeStyle)
-  - [Weather integration](https://pine64.org/documentation/PineTime/Software/InfiniTime_weather/)
+- 🧭 **Analog Clock UI with Activity Pie Chart**  
+  Each segment of the analog clock represents an activity in the child’s day.
 
-### Companion apps
+- 👨‍👩‍👧‍👦 **Parent-Defined Routine**  
+  Define your child’s daily routine with a simple config (custom app or BLE tool integration planned).
 
-- [Gadgetbridge](https://gadgetbridge.org/) (Android)
-- [Amazfish](https://github.com/piggz/harbour-amazfish/) ([SailfishOS](https://sailfishos-chum.github.io/apps/harbour-amazfish/), [Ubuntu Touch](https://open-store.io/app/uk.co.piggz.amazfish), [Flatpak](https://flathub.org/apps/uk.co.piggz.amazfish))
-- [Siglo](https://github.com/alexr4535/siglo) (Linux)
-- [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS)
-- [ITD](https://gitea.elara.ws/Elara6331/itd) (Linux)
-- [WatchMate](https://github.com/azymohliad/watchmate) (Linux)
-- [InfiniTimeExplorer](https://infinitimeexplorer.netlify.app) (Web)
+- 🔔 **Gentle Time Awareness**  
+  Visual reminders help kids understand when it's time to transition to the next task.
 
-<br>
+- 🎨 **Kid-Friendly Design**  
+  Clean, colorful UI tailored for younger users with simplified interactions.
 
-> *InfiniTimeExplorer is only compatible with web browsers that support Web BLE. Current fully supported browsers include Chrome and Microsoft Edge.* 
->
-> *We removed mentions to NRFConnect as this app is closed source and recent versions do not work anymore with InfiniTime (the last version known to work is 4.24.3). If you used NRFConnect in the past, we recommend you switch to [Gadgetbridge](https://gadgetbridge.org/).* 
+- 💡 **Based on InfiniTime**  
+  Leverages the powerful open-source firmware platform that runs on PineTime and compatible devices.
 
-## Development
+---
 
-- [InfiniTime Vision](doc/InfiniTimeVision.md)
-- [Rough structure of the code](doc/code/Intro.md)
-- [How to implement an application](doc/code/Apps.md)
-- [Generate the fonts and symbols](src/displayapp/fonts/README.md)
-- [Tips on designing an app UI](doc/ui_guidelines.md)
-- [Bootloader, OTA and DFU](bootloader/README.md)
-- [External resources](doc/ExternalResources.md)
+## 📱 Devices Supported
 
-### Contributing
+RoutineHero runs on devices compatible with InfiniTime, including:
 
-- [How to contribute](CONTRIBUTING.md)
-- [Coding conventions](doc/coding-convention.md)
+- PineTime (nRF52832)
+- Dev boards supporting BLE and compatible display controllers (with porting)
 
-### Build, flash and debug
+---
 
-- [InfiniTime simulator](https://github.com/InfiniTimeOrg/InfiniSim)
-- [Build the project](doc/buildAndProgram.md)
-- [Build the project with Docker](doc/buildWithDocker.md)
-- [Build the project with VSCode](doc/buildWithVScode.md)
-- [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)
-- [Flash the firmware using SWD interface](doc/SWD.md)
-- [Flash the firmware using JLink](doc/jlink.md)
-- [Flash the firmware using GDB](doc/gdb.md)
-- [Stub using NRF52-DK](doc/PinetimeStubWithNrf52DK.md)
+## 🚀 Getting Started
 
-### API
+1. **Clone the Repo**
+   ```bash
+   git clone https://github.com/trollderiu/InfiniTime-RoutineHero.git
+   cd InfiniTime-RoutineHero
+   ```
 
-- [BLE implementation and API](doc/ble.md)
+2. **Build the Firmware**  
+   Follow the [InfiniTime build instructions](https://github.com/InfiniTimeOrg/InfiniTime#building-the-firmware), as they apply here too.
 
-### Architecture and technical topics
+3. **Flash to Device**  
+   Use your preferred method (DFU, SWD, etc.) to upload to your PineTime or compatible hardware.
 
-- [Memory analysis](doc/MemoryAnalysis.md)
+---
 
-### Project management
+## 📂 Project Structure
 
-- [Maintainer's guide](doc/maintainer-guide.md)
-- [Versioning](doc/versioning.md)
-- [Project branches](doc/branches.md)
-- [Files included in the release notes](doc/filesInReleaseNotes.md)
-- [Files needed by the factory](doc/files-needed-by-factory.md)
+This project retains much of the original InfiniTime code, with key changes including:
 
-## Licenses
+- `src/display/RoutineHeroWatchFace.cpp` – Custom watchface with pie chart overlay
+- `src/display/RoutineHeroTimer.cpp` – Screen with time left for the current activity
+- `resources/images/` – Custom icons for kid-friendly interface
 
-This project is released under the GNU General Public License version 3 or, at your option, any later version.
+More detailed module descriptions coming soon.
 
-It integrates the following projects:
+---
 
-- RTOS: **[FreeRTOS](https://freertos.org)** under the MIT license
-- UI: **[LittleVGL/LVGL](https://lvgl.io/)** under the MIT license
-- BLE stack: **[NimBLE](https://github.com/apache/mynewt-nimble)** under the Apache 2.0 license
-- Font: **[Jetbrains Mono](https://www.jetbrains.com/fr-fr/lp/mono/)** under the Apache 2.0 license
+## 🛠 Contributing
 
-## Credits
+Want to help improve RoutineHero? PRs and suggestions are welcome!  
+Check the [Issues](https://github.com/trollderiu/InfiniTime-RoutineHero/issues) tab for bugs and roadmap items.
 
-I’m not working alone on this project. First, many people create pull requests for this project. Then, there is the whole #pinetime community: a lot of people all around the world who are hacking, searching, experimenting and programming the Pinetime. We exchange our ideas, experiments and code in the chat rooms and forums.
+---
 
-Here are some people I would like to highlight:
+## 🙏 Credits
 
-- [Atc1441](https://github.com/atc1441/): He works on an Arduino based firmware for the Pinetime and many other smartwatches based on similar hardware. He was of great help when I was implementing support for the BMA421 motion sensor and I²C driver.
-- [Koen](https://github.com/bosmoment): He’s working on a firmware based on RiotOS. He integrated similar libs as me: NimBLE, LittleVGL,… His help was invaluable too!
-- [Lup Yuen Lee](https://github.com/lupyuen): He is everywhere: he works on a Rust firmware, builds a MCUBoot based bootloader for the Pinetime, designs a Flutter based companion app for smartphones and writes a lot of articles about the Pinetime!
+RoutineHero is powered by:
+
+- [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime) – Original firmware base
+- [LittlevGL (LVGL)](https://lvgl.io/) – Embedded graphics library
+- The open-source community ❤️
+
+---
+
+## 📄 License
+
+RoutineHero inherits the [InfiniTime license](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/LICENSE) (Apache 2.0).
