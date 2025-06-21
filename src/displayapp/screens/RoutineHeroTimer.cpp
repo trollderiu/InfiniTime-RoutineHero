@@ -12,9 +12,9 @@
 
 using namespace Pinetime::Applications::Screens;
 
-uint8_t* Timer::cbuf;
+uint8_t* RoutineHeroTimer::cbuf;
 
-const TimerNumbers Timer::numbers[12] = {
+const TimerNumbers RoutineHeroTimer::numbers[12] = {
   {173, 30},
   {211, 64},
   {227, 120},
@@ -29,7 +29,7 @@ const TimerNumbers Timer::numbers[12] = {
   {121, 14},
 };
 
-Timer::Timer(Controllers::DateTime& dateTimeController,
+RoutineHeroTimer::RoutineHeroTimer(Controllers::DateTime& dateTimeController,
              const Controllers::Battery& batteryController,
              const Controllers::Ble& bleController,
              Controllers::Settings& settingsController,
@@ -175,12 +175,12 @@ Timer::Timer(Controllers::DateTime& dateTimeController,
   taskRefresh = lv_task_create(RefreshTaskCallback, 500, LV_TASK_PRIO_MID, this);
 }
 
-Timer::~Timer() {
+RoutineHeroTimer::~RoutineHeroTimer() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-void Timer::Refresh() {
+void RoutineHeroTimer::Refresh() {
 
   // ICONS UPDATE
   if (state != DisplayApp::States::Idle) {
@@ -312,13 +312,13 @@ void Timer::Refresh() {
   DrawIcon(angleLeft, sliceIndex);
 }
 
-void Timer::asyncVibrate(uint8_t sliceIndex) {
+void RoutineHeroTimer::asyncVibrate(uint8_t sliceIndex) {
   if (sSlice < 254 && sSlice != sliceIndex) {
     xTimerStart(vibrationTimer, 0);
   }
 }
 
-void Timer::Vibrate(TimerHandle_t /* xTimer */) {
+void RoutineHeroTimer::Vibrate(TimerHandle_t /* xTimer */) {
   nrf_gpio_pin_clear(PinMap::Motor);
   vTaskDelay(100);
   nrf_gpio_pin_set(PinMap::Motor);
@@ -328,7 +328,7 @@ void Timer::Vibrate(TimerHandle_t /* xTimer */) {
   nrf_gpio_pin_set(PinMap::Motor);
 }
 
-void Timer::DrawSlice(uint16_t angle, uint8_t sliceIndex) {
+void RoutineHeroTimer::DrawSlice(uint16_t angle, uint8_t sliceIndex) {
 
   // .h VARIABLE DECLARATION TO PREVENT OVERRIDE?
   uint8_t red = 0;
@@ -361,7 +361,7 @@ void Timer::DrawSlice(uint16_t angle, uint8_t sliceIndex) {
   lv_arc_set_bg_angles(p, 360 - angle, 0);
 }
 
-void Timer::DrawSlice2(uint16_t angle1, uint16_t angle2, uint8_t sliceIndex) {
+void RoutineHeroTimer::DrawSlice2(uint16_t angle1, uint16_t angle2, uint8_t sliceIndex) {
   if (sliceIndex >= slices.size())
     return;
   slice2 = &slices[sliceIndex];
@@ -370,7 +370,7 @@ void Timer::DrawSlice2(uint16_t angle1, uint16_t angle2, uint8_t sliceIndex) {
   lv_arc_set_bg_angles(pDone, 360 - angle2, 360 - angle1);
 }
 
-void Timer::DrawIcon(uint16_t angle, uint8_t sliceIndex) {
+void RoutineHeroTimer::DrawIcon(uint16_t angle, uint8_t sliceIndex) {
 
   // NEXT ACTIVITY ICON
   if (angle < 315) {
@@ -406,7 +406,7 @@ void Timer::DrawIcon(uint16_t angle, uint8_t sliceIndex) {
   position_image_on_circle(currentIcon, CANVAS_CENTER, CANVAS_CENTER, 65, -angle / 2 - 90);
 }
 
-void Timer::DrawArrow(int16_t angle) {
+void RoutineHeroTimer::DrawArrow(int16_t angle) {
   if (angle > 360)
     angle = 360;
   lv_canvas_fill_bg(canvas, LV_COLOR_BLACK, 0); // Invalid write of size 8
@@ -421,20 +421,20 @@ void Timer::DrawArrow(int16_t angle) {
   lv_line_set_points(line, line_points, 2);
 }
 
-void Timer::polar_to_cartesian(int16_t angle_deg, uint8_t radius, int8_t* x, int8_t* y) {
+void RoutineHeroTimer::polar_to_cartesian(int16_t angle_deg, uint8_t radius, int8_t* x, int8_t* y) {
   float angle_rad = angle_deg * 0.017453293; // 3.14159265358979323846 / 180.0;
   *x = radius * cos(angle_rad);
   *y = radius * sin(angle_rad);
 }
 
-void Timer::position_image_on_circle(lv_obj_t* img, uint8_t center_x, uint8_t center_y, uint8_t radius, int16_t angle_deg) {
+void RoutineHeroTimer::position_image_on_circle(lv_obj_t* img, uint8_t center_x, uint8_t center_y, uint8_t radius, int16_t angle_deg) {
   int8_t img_x, img_y;
   polar_to_cartesian(angle_deg, radius, &img_x, &img_y);
   // lv_obj_set_pos(img, center_x + img_x - lv_obj_get_width(img) / 2, center_y + img_y - lv_obj_get_height(img) / 2);
   lv_obj_set_pos(img, center_x + img_x - 12, center_y + img_y - 12);
 }
 
-void Timer::DrawTime(uint8_t hour, uint8_t min) {
+void RoutineHeroTimer::DrawTime(uint8_t hour, uint8_t min) {
   if (sHour != hour || sMin != min) {
     sHour = hour;
     sHour = min;
@@ -442,7 +442,7 @@ void Timer::DrawTime(uint8_t hour, uint8_t min) {
   }
 }
 
-void Timer::SetBatteryIcon() {
+void RoutineHeroTimer::SetBatteryIcon() {
   auto batteryPercent = batteryPercentRemaining.Get();
   batteryIcon.SetBatteryPercentage(batteryPercent);
 }

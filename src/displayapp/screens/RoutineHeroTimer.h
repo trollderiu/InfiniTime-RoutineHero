@@ -25,10 +25,10 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class Timer : public Screen {
+      class RoutineHeroTimer : public Screen {
       public:
-        Timer(Controllers::DateTime& dateTimeController, const Controllers::Battery& batteryController, const Controllers::Ble& bleController, Controllers::Settings& settingsController, Controllers::BrightnessController& brightnessController, DisplayApp::States& state);
-        ~Timer() override;
+        RoutineHeroTimer(Controllers::DateTime& dateTimeController, const Controllers::Battery& batteryController, const Controllers::Ble& bleController, Controllers::Settings& settingsController, Controllers::BrightnessController& brightnessController, DisplayApp::States& state);
+        ~RoutineHeroTimer() override;
 
         void Refresh() override;
         void asyncRing();

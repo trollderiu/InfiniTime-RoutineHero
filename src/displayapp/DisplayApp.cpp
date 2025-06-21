@@ -419,7 +419,7 @@ void DisplayApp::Refresh() {
               //   LoadNewScreen(Apps::CurrentActivity, DisplayApp::FullRefreshDirections::Down);
               case TouchEvents::SwipeLeft:
                 // LoadNewScreen(Apps::CurrentActivity, DisplayApp::FullRefreshDirections::Right);
-                LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Right);
+                LoadNewScreen(Apps::RoutineHeroTimer, DisplayApp::FullRefreshDirections::Right);
                 break;
               // case TouchEvents::DoubleTap:
               //   PushMessageToSystemTask(System::Messages::GoToSleep);
@@ -430,7 +430,7 @@ void DisplayApp::Refresh() {
             // } else if (gesture == LoadDirToReturnSwipe(appStackDirections.Top())) {
             //   LoadPreviousScreen();
             // } else if (currentApp == Apps::CurrentActivity) {
-          } else if (currentApp == Apps::Timer) {
+          } else if (currentApp == Apps::RoutineHeroTimer) {
             switch (gesture) {
               // case TouchEvents::SwipeUp:
               //   LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
@@ -470,7 +470,7 @@ void DisplayApp::Refresh() {
           appStackDirections.Reset();
           returnAppStack.Reset();
         } else {
-          LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Right);
+          LoadNewScreen(Apps::RoutineHeroTimer, DisplayApp::FullRefreshDirections::Right);
         }
         break;
       case Messages::ButtonLongerPressed:
@@ -481,7 +481,7 @@ void DisplayApp::Refresh() {
           appStackDirections.Reset();
           returnAppStack.Reset();
         } else {
-          LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Right);
+          LoadNewScreen(Apps::RoutineHeroTimer, DisplayApp::FullRefreshDirections::Right);
         }
         break;
       case Messages::ButtonDoubleClicked:
@@ -494,7 +494,7 @@ void DisplayApp::Refresh() {
           appStackDirections.Reset();
           returnAppStack.Reset();
         } else {
-          LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Right);
+          LoadNewScreen(Apps::RoutineHeroTimer, DisplayApp::FullRefreshDirections::Right);
         }
         break;
 
@@ -579,8 +579,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     // case Apps::CurrentActivity:
     //   currentScreen = std::make_unique<Screens::CurrentActivity>(dateTimeController, settingsController, state);
     //   break;
-    case Apps::Timer:
-      currentScreen = std::make_unique<Screens::Timer>(dateTimeController,
+    case Apps::RoutineHeroTimer:
+      currentScreen = std::make_unique<Screens::RoutineHeroTimer>(dateTimeController,
                                                        batteryController,
                                                        bleController,
                                                        settingsController,

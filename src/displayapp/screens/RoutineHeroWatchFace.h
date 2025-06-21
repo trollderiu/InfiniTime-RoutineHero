@@ -173,7 +173,7 @@ namespace Pinetime {
         auto loadScreenFunction = [&controllers](lv_obj_t* p, lv_event_t event) {
           if (event == LV_EVENT_CLICKED) {
             // controllers.displayApp->LoadScreen(Apps::CurrentActivity, DisplayApp::FullRefreshDirections::None);
-            controllers.displayApp->LoadScreen(Apps::Timer, DisplayApp::FullRefreshDirections::None);
+            controllers.displayApp->LoadScreen(Apps::RoutineHeroTimer, DisplayApp::FullRefreshDirections::None);
           }
         };
         Screens::RoutineHeroWatchFace::setLoadScreenFunction(loadScreenFunction);
