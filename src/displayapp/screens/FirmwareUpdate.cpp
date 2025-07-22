@@ -39,6 +39,9 @@ void FirmwareUpdate::Refresh() {
       // launched without a firmware update. This should never happen.
       if (state != States::Error) {
         if (xTaskGetTickCount() - startTime > (60 * 1024)) {
+          // const char* msg = "Timeout waiting for firmware update start";
+          // strcpy(lastErrorMsg, msg); // Only if you're 100% sure msg fits
+          // lastErrorCode = 1;
           UpdateError();
           state = States::Error;
         }
@@ -85,7 +88,17 @@ void FirmwareUpdate::UpdateValidated() {
 }
 
 void FirmwareUpdate::UpdateError() {
-  lv_label_set_text_static(percentLabel, "#ff0000 Error!#");
+
+  // UI not ready — skip update
+  if (percentLabel) {
+    lv_label_set_text_static(percentLabel, "#ff0000 Error!#");
+    // if (lastErrorMsg[0] == '\0') {
+    //   lv_label_set_text_static(percentLabel, "#ff0000 Error occurred during update.#");
+    // } else {
+    //   lv_label_set_text_fmt(percentLabel, "#ff0000 Error: %s#", lastErrorMsg);
+    // }
+  }
+
   startTime = xTaskGetTickCount();
 }
 

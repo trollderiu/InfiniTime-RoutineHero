@@ -45,13 +45,13 @@ void AlarmController::Init(System::SystemTask* systemTask) {
   }
 }
 
-void AlarmController::SaveAlarm() {
-  // verify if it is necessary to save
-  if (alarmChanged) {
-    SaveSettingsToFile();
-  }
-  alarmChanged = false;
-}
+// void AlarmController::SaveAlarm() {
+//   // verify if it is necessary to save
+//   if (alarmChanged) {
+//     SaveSettingsToFile();
+//   }
+//   alarmChanged = false;
+// }
 
 void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
   if (alarm.hours == alarmHr && alarm.minutes == alarmMin) {
@@ -164,19 +164,19 @@ void AlarmController::LoadSettingsFromFile() {
   NRF_LOG_INFO("[AlarmController] Loaded alarm settings from file");
 }
 
-void AlarmController::SaveSettingsToFile() const {
-  lfs_dir systemDir;
-  if (fs.DirOpen("/.system", &systemDir) != LFS_ERR_OK) {
-    fs.DirCreate("/.system");
-  }
-  fs.DirClose(&systemDir);
-  lfs_file_t alarmFile;
-  if (fs.FileOpen(&alarmFile, "/.system/alarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
-    NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file for saving");
-    return;
-  }
+// void AlarmController::SaveSettingsToFile() const {
+//   lfs_dir systemDir;
+//   if (fs.DirOpen("/.system", &systemDir) != LFS_ERR_OK) {
+//     fs.DirCreate("/.system");
+//   }
+//   fs.DirClose(&systemDir);
+//   lfs_file_t alarmFile;
+//   if (fs.FileOpen(&alarmFile, "/.system/alarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+//     NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file for saving");
+//     return;
+//   }
 
-  fs.FileWrite(&alarmFile, reinterpret_cast<const uint8_t*>(&alarm), sizeof(alarm));
-  fs.FileClose(&alarmFile);
-  NRF_LOG_INFO("[AlarmController] Saved alarm settings with format version %u to file", alarm.version);
-}
+//   fs.FileWrite(&alarmFile, reinterpret_cast<const uint8_t*>(&alarm), sizeof(alarm));
+//   fs.FileClose(&alarmFile);
+//   NRF_LOG_INFO("[AlarmController] Saved alarm settings with format version %u to file", alarm.version);
+// }

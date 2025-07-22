@@ -3,6 +3,7 @@
 #include "displayapp/screens/Screen.h"
 #include <lvgl/src/lv_core/lv_obj.h>
 #include "FreeRTOS.h"
+// #include <cstdint>
 
 namespace Pinetime {
   namespace Controllers {
@@ -38,6 +39,10 @@ namespace Pinetime {
 
         lv_task_t* taskRefresh;
         TickType_t startTime;
+
+        // std::string lastErrorMsg; //internally mutable or updated elsewhere
+        // char lastErrorMsg[64];
+        // uint8_t lastErrorCode;
       };
     }
   }

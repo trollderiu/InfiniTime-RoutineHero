@@ -129,7 +129,7 @@ Alarm::~Alarm() {
     StopAlerting();
   }
   lv_obj_clean(lv_scr_act());
-  alarmController.SaveAlarm();
+  // alarmController.SaveAlarm();
 }
 
 void Alarm::DisableAlarm() {

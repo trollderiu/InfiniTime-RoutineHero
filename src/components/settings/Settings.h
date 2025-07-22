@@ -6,6 +6,12 @@
 #include "displayapp/apps/Apps.h"
 #include <vector> //GetSchedule()
 
+struct Date {
+  uint8_t day;
+  uint8_t month;
+  uint8_t year;
+};
+
 struct IntervalColor {
   int16_t start;
   int16_t end;
@@ -16,10 +22,20 @@ struct IntervalColor {
 };
 
 struct Data {
-  int year;
-  int month;
-  int day;
-  int weekend;
+  bool monday;
+  bool tuesday;
+  bool wednesday;
+  bool thursday;
+  bool friday;
+  bool saturday;
+  bool sunday;
+
+  // int year;
+  // int month;
+  // int day;
+  // int weekend;
+  std::vector<Date> dates;
+
   // std::vector<std::vector<int>> slices;
   std::vector<IntervalColor> slices;
 };
@@ -77,7 +93,7 @@ namespace Pinetime {
       Settings& operator=(Settings&&) = delete;
 
       void Init();
-      void SaveSettings();
+      // void SaveSettings();
 
       // void SetWatchFace(Pinetime::Applications::WatchFace face) {
       //   if (face != settings.watchFace) {
@@ -317,7 +333,7 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
-      std::vector<Data> LoadClocksFromFile() const;
+      bool LoadClocksFromFile(std::vector<Data>& dataList) const;
 
     private:
       Pinetime::Controllers::FS& fs;
@@ -361,14 +377,17 @@ namespace Pinetime {
       bool bleRadioEnabled = true;
 
       void LoadSettingsFromFile();
-      void SaveSettingsToFile();
+      // void SaveSettingsToFile();
 
       // std::vector<int> parseSlice(const std::string& sliceStr) const;
-      IntervalColor parseSlice(const std::string& sliceStr) const;
+      // IntervalColor parseSlice(const std::string& sliceStr) const;
+      bool parseSlice(const std::string& sliceStr, IntervalColor& slice) const;
       // std::vector<std::vector<int>> parseSlices(const std::string& slicesStr) const;
       std::vector<IntervalColor> parseSlices(const std::string& slicesStr) const;
-      Data parseLine(const std::string& line) const;
+      bool parseLine(const std::string& line, Data& outData) const;
+      std::vector<std::string> splitString(const std::string& str, char delimiter) const;
       void processBufferSettings(const std::string &bufferSettings, std::vector<Data> &dataList) const;
+      // bool isValidNumber(const std::string& str);
     };
   }
 }

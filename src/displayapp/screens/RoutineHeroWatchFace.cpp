@@ -3,16 +3,23 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
-// #include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/Symbols.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/settings/Settings.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include "displayapp/icons/arrow/arrowicon.c"
+#include "displayapp/icons/heart/hearticon.c"
 #include "displayapp/DisplayApp.h"
 #include <hal/nrf_gpio.h>   //nrf_gpio_pin_clear(PinMap::Motor);
 #include "drivers/PinMap.h" //nrf_gpio_pin_clear(PinMap::Motor);
+// #include <iostream>
 
 using namespace Pinetime::Applications::Screens;
+
+// namespace {
+//   constexpr uint16_t CanvasBufferSize = 520;
+//   static uint8_t canvasBuffer[CanvasBufferSize] = {0}; // (64+1) * 64 / 8
+// }
 
 const Numbers RoutineHeroWatchFace::numbers[12] = {
   {173, 30},
@@ -30,6 +37,7 @@ const Numbers RoutineHeroWatchFace::numbers[12] = {
 };
 
 uint8_t* RoutineHeroWatchFace::cbuf;
+// uint8_t* RoutineHeroWatchFace::cbuf = nullptr;
 
 RoutineHeroWatchFace::RoutineHeroWatchFace(Controllers::DateTime& dateTimeController,
                                            const Controllers::Battery& batteryController,
@@ -65,6 +73,8 @@ void RoutineHeroWatchFace::setLoadScreenFunction(RoutineHeroWatchFace::LoadScree
 RoutineHeroWatchFace::LoadScreenFunction RoutineHeroWatchFace::loadScreenFunc = nullptr;
 
 void RoutineHeroWatchFace::InitLvgl() {
+  // RoutineHeroWatchFace::cbuf = canvasBuffer;
+
   dateTimeController.sAngle = -1;
   // dateTimeController.SetAngle(-1);
   dateTimeController.sSlice = 255;
@@ -86,7 +96,7 @@ void RoutineHeroWatchFace::InitLvgl() {
   lv_obj_set_style_local_scale_width(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
   lv_obj_set_style_local_scale_end_line_width(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_scale_end_color(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GAINSBORO);
-  lv_obj_set_click(minor_scales, false);
+  // lv_obj_set_click(minor_scales, false);
 
   major_scales = lv_linemeter_create(lv_scr_act(), nullptr);
   lv_linemeter_set_scale(major_scales, 330, 12);
@@ -97,7 +107,7 @@ void RoutineHeroWatchFace::InitLvgl() {
   lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 2);
   lv_obj_set_style_local_scale_end_color(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_obj_set_click(major_scales, false);
+  // lv_obj_set_click(major_scales, false);
 
   // major_line = lv_line_create(lv_scr_act(), nullptr);
   // lv_obj_set_style_local_line_color(major_line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GAINSBORO);
@@ -137,7 +147,7 @@ void RoutineHeroWatchFace::InitLvgl() {
   // lv_obj_set_style_local_image_recolor(mainIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   canvas = lv_canvas_create(lv_scr_act(), nullptr);
-  lv_obj_set_click(canvas, false);
+  // lv_obj_set_click(canvas, false);
   lv_obj_set_hidden(canvas, true);
   if (cbuf == nullptr)
     cbuf = new uint8_t[520](); //(64+1) * 64 / 8
@@ -197,16 +207,96 @@ void RoutineHeroWatchFace::Refresh() {
     return;
   dateTimeController.sAngle = angle720;
 
+  std::vector<Data> dataList;
+  bool clocksFile = settingsController.LoadClocksFromFile(dataList);
+  // std::cout << "dataList.size(): " << dataList.size() << std::endl;
+
+  // Handle empty dataList with a Welcome
+  if (dataList.empty()) {
+    wasEmpty = true;
+
+    // COMPENSATE NO ICON LOADED:
+    brightnessController.Set(Controllers::BrightnessController::Levels::High);
+
+    // lv_obj_set_hidden(canvas, true);
+    lv_obj_clean(pie);
+
+    // Create label
+    if (!clocksFile) {
+      lv_label_set_text_static(label_time, "Welcome!\nDownload & connect\nthe RoutineHero app!\n ");
+    } else {
+      lv_label_set_text_static(label_time, "Error\nCorrupted schedule\nUpdate the watch!\n ");
+    }
+    lv_obj_set_style_local_text_line_space(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, 9);
+    lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
+    lv_obj_align(label_time, nullptr, LV_ALIGN_CENTER, 0, -20);
+
+    // Make sure canvas is visible
+    lv_obj_set_hidden(canvas, false);
+    lv_canvas_fill_bg(canvas, LV_COLOR_BLACK, 0); // Invalid write of size 8
+    lv_canvas_transform(canvas, (lv_img_dsc_t*) &hearticon, 0, LV_IMG_ZOOM_NONE, 0, 0, 64, 64, false);
+    lv_obj_set_pos(canvas, 90, 140);
+
+    return;
+  }
+
+  if (wasEmpty) {
+    lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+    wasEmpty = false;
+  }
+
   Controllers::DateTime::Days day_of_week = dateTimeController.DayOfWeek();
-  bool weekend = (day_of_week == Controllers::DateTime::Days::Sunday || day_of_week == Controllers::DateTime::Days::Saturday) ? 1 : 0;
-  std::vector<Data> dataList = settingsController.LoadClocksFromFile();
+
   std::vector<Data> result;
   for (const auto& data : dataList) {
-    if (data.weekend == weekend) {
+
+    bool activeToday = false;
+
+    switch (day_of_week) {
+      case Controllers::DateTime::Days::Monday:
+        activeToday = data.monday;
+        break;
+      case Controllers::DateTime::Days::Tuesday:
+        activeToday = data.tuesday;
+        break;
+      case Controllers::DateTime::Days::Wednesday:
+        activeToday = data.wednesday;
+        break;
+      case Controllers::DateTime::Days::Thursday:
+        activeToday = data.thursday;
+        break;
+      case Controllers::DateTime::Days::Friday:
+        activeToday = data.friday;
+        break;
+      case Controllers::DateTime::Days::Saturday:
+        activeToday = data.saturday;
+        break;
+      case Controllers::DateTime::Days::Sunday:
+        activeToday = data.sunday;
+        break;
+      default:
+        // Optionally handle or ignore
+        break;
+    }
+
+    if (activeToday) {
       result.push_back(data);
     }
   }
-  slices = result[0].slices;
+
+  // SCHEDULE DATA WITHOUT RESULTS
+  // std::cout << "result.size(): " << result.size() << std::endl;
+  if (result.size() == 0) {
+    slices = dataList[0].slices;
+  } else {
+    slices = result[0].slices;
+  }
+
+  // std::cout << "slices.size(): " << slices.size() << std::endl;
+
+  // SCHEDULE DATA WITHOUT SLICES
+  if (slices.size() == 0)
+    return;
 
   uint8_t sliceIndex = 255;
   for (i = 0; i < slices.size(); ++i) {
@@ -238,7 +328,7 @@ void RoutineHeroWatchFace::Refresh() {
     lv_obj_set_hidden(canvas, true);
     lv_obj_clean(pie);
     lv_obj_t* imgFlag = lv_img_create(pie, nullptr);
-    lv_obj_set_click(imgFlag, false);
+    // lv_obj_set_click(imgFlag, false);
     lv_img_set_auto_size(imgFlag, false);
     lv_obj_set_size(imgFlag, 24, 24);
     lv_img_set_src(imgFlag, "F:/images/1.bin");
@@ -248,7 +338,7 @@ void RoutineHeroWatchFace::Refresh() {
     return;
   }
 
-  DrawPie(angle720);
+  DrawPie(angle720, slices);
   CanvasReset(angle720 * 2.5);
   DrawArrow(angle720 * 2.5);
 }
@@ -262,30 +352,17 @@ void RoutineHeroWatchFace::DrawTime(uint8_t hour, uint8_t min) {
   if (sHour != hour || sMin != min) {
     sHour = hour;
     sHour = min;
-    lv_label_set_text_fmt(label_time, "#cccccc %02d:%02d", hour, min);
+    lv_label_set_text_fmt(label_time, "#cccccc %02d:%02d", hour, min); //:::
   }
 }
 
 // angle720: Angle of the hour pointer from 0 to 720 (2 full circles)
-void RoutineHeroWatchFace::DrawPie(int16_t angle720) {
-  Controllers::DateTime::Days day_of_week = dateTimeController.DayOfWeek();
-  bool weekend = (day_of_week == Controllers::DateTime::Days::Sunday || day_of_week == Controllers::DateTime::Days::Saturday) ? 1 : 0;
-  dataList = settingsController.LoadClocksFromFile();
-
-  // FIND FIRST CLOCK SCHEDULE
-  result = std::vector<Data>();
-  for (const auto& data : dataList) {
-    if (data.weekend == weekend) {
-      result.push_back(data);
-    }
-  }
-  slices = result[0].slices;
+void RoutineHeroWatchFace::DrawPie(int16_t angle720, std::vector<IntervalColor> slices) {
 
   // 360 OFFSET IF >12h
   uint8_t hour = dateTimeController.Hours();
-  bool clock2 = (hour >= 12);
   uint16_t offset = 0;
-  if (clock2) {
+  if (hour >= 12) {
     offset = (uint16_t) 144;
   }
 
@@ -307,9 +384,8 @@ void RoutineHeroWatchFace::DrawPie(int16_t angle720) {
   }
 
   // UPDATE CLOCK IF CURRENT SLICE CHANGED
-  if (dateTimeController.sSlice != sliceIndex || sClock2 != clock2) {
+  if (dateTimeController.sSlice != sliceIndex) {
     dateTimeController.sSlice = sliceIndex;
-    sClock2 = clock2;
 
     // CLEAN pie IF NOT FIRST SLICE LOADED
     // if (255 != dateTimeController.sSlice) //-1
@@ -331,23 +407,31 @@ void RoutineHeroWatchFace::DrawSlice(IntervalColor slice, int16_t angle720) {
   if (slice.red == 0 && slice.green == 0 && slice.blue == 0)
     return;
 
+  uint8_t hour = dateTimeController.Hours();
   uint16_t start = slice.start;
   uint16_t end = slice.end;
 
-  uint8_t hour = dateTimeController.Hours();
+  // AFTERNOON START AT 12, PREVENT COLLISION WITH SLEEP TIME
+  if (hour >= 12 && start < 144)
+    start = 144;
+
+  // IF BEFORE 6:00 DON'T SHOW SLICES TRASPASSING 12:00 (SHOW NIGHT)
+  if (hour < 6 && end > 144)
+    end = 144;
+
   if (hour >= 12 && end > 144) {
     start -= 144;
     end -= 144;
   }
 
-  // uint do not have negatives
+  // uint can't handle negatives, do += 144 instead of -= 144
   if (start > 144) {
     start += 144;
     end += 144;
   }
 
   lv_obj_t* p = lv_arc_create(pie, nullptr);
-  lv_obj_set_click(p, false);
+  // lv_obj_set_click(p, false);
 
   if (angle720 >= slice.start && angle720 < slice.end && 0 != slice.icon) {
     lv_arc_set_radius(p, CANVAS_CENTER);
@@ -372,10 +456,18 @@ void RoutineHeroWatchFace::DrawIcon(IntervalColor slice, int16_t angle720) {
     return;
   }
 
+  uint8_t hour = dateTimeController.Hours();
   uint16_t start = slice.start;
   uint16_t end = slice.end;
 
-  uint8_t hour = dateTimeController.Hours();
+  // AFTERNOON START AT 12, PREVENT COLLISION WITH SLEEP TIME
+  if (hour >= 12 && start < 144)
+    start = 144;
+
+  // IF BEFORE 6:00 DON'T SHOW SLICES TRASPASSING 12:00 (SHOW NIGHT)
+  if (hour < 6 && end > 144)
+    end = 144;
+
   if (hour >= 12 && end > 144) {
     start -= 144;
     end -= 144;

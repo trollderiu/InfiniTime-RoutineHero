@@ -30,11 +30,11 @@ const TimerNumbers RoutineHeroTimer::numbers[12] = {
 };
 
 RoutineHeroTimer::RoutineHeroTimer(Controllers::DateTime& dateTimeController,
-             const Controllers::Battery& batteryController,
-             const Controllers::Ble& bleController,
-             Controllers::Settings& settingsController,
-             Controllers::BrightnessController& brightnessController,
-             DisplayApp::States& state)
+                                   const Controllers::Battery& batteryController,
+                                   const Controllers::Ble& bleController,
+                                   Controllers::Settings& settingsController,
+                                   Controllers::BrightnessController& brightnessController,
+                                   DisplayApp::States& state)
   : state {state},
     batteryIcon(true),
     dateTimeController {dateTimeController},
@@ -223,16 +223,55 @@ void RoutineHeroTimer::Refresh() {
   uint16_t angle720 = hour24 * 30 + min / 2;
 
   Controllers::DateTime::Days day_of_week = dateTimeController.DayOfWeek();
-  bool weekend = (day_of_week == Controllers::DateTime::Days::Sunday || day_of_week == Controllers::DateTime::Days::Saturday) ? 1 : 0;
 
-  dataList = settingsController.LoadClocksFromFile();
+  settingsController.LoadClocksFromFile(dataList);
+
+  if (dataList.empty()) {
+    return;
+  }
+
   result = std::vector<Data>();
   for (const auto& data : dataList) {
-    if (data.weekend == weekend) {
+
+    bool activeToday = false;
+
+    switch (day_of_week) {
+      case Controllers::DateTime::Days::Monday:
+        activeToday = data.monday;
+        break;
+      case Controllers::DateTime::Days::Tuesday:
+        activeToday = data.tuesday;
+        break;
+      case Controllers::DateTime::Days::Wednesday:
+        activeToday = data.wednesday;
+        break;
+      case Controllers::DateTime::Days::Thursday:
+        activeToday = data.thursday;
+        break;
+      case Controllers::DateTime::Days::Friday:
+        activeToday = data.friday;
+        break;
+      case Controllers::DateTime::Days::Saturday:
+        activeToday = data.saturday;
+        break;
+      case Controllers::DateTime::Days::Sunday:
+        activeToday = data.sunday;
+        break;
+      default:
+        // Optionally handle or ignore
+        break;
+    }
+
+    if (activeToday) {
       result.push_back(data);
     }
   }
-  slices = result[0].slices;
+
+  if (result.size() == 0) {
+    slices = dataList[0].slices;
+  } else {
+    slices = result[0].slices;
+  }
 
   uint8_t sliceIndex = 255;
   for (i = 0; i < slices.size(); ++i) {

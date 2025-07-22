@@ -33,7 +33,7 @@ namespace Pinetime {
       AlarmController(Controllers::DateTime& dateTimeController, Controllers::FS& fs);
 
       void Init(System::SystemTask* systemTask);
-      void SaveAlarm();
+      // void SaveAlarm();
       void SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin);
       void ScheduleAlarm();
       void DisableAlarm();
@@ -88,7 +88,7 @@ namespace Pinetime {
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> alarmTime;
 
       void LoadSettingsFromFile();
-      void SaveSettingsToFile() const;
+      // void SaveSettingsToFile() const;
     };
   }
 }

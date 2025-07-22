@@ -2,7 +2,8 @@
 #include <cstdlib>
 #include <cstring>
 #include <vector> //GetSchedule()
-// #include <sstream>
+// #include <iostream>
+#include <algorithm>
 
 using namespace Pinetime::Controllers;
 
@@ -27,14 +28,14 @@ void Settings::Init() {
   LoadSettingsFromFile();
 }
 
-void Settings::SaveSettings() {
+// void Settings::SaveSettings() {
 
-  // verify if is necessary to save
-  if (settingsChanged) {
-    SaveSettingsToFile();
-  }
-  settingsChanged = false;
-}
+//   // verify if is necessary to save
+//   if (settingsChanged) {
+//     SaveSettingsToFile();
+//   }
+//   settingsChanged = false;
+// }
 
 void Settings::LoadSettingsFromFile() {
   SettingsData bufferSettings;
@@ -50,15 +51,15 @@ void Settings::LoadSettingsFromFile() {
   }
 }
 
-void Settings::SaveSettingsToFile() {
-  lfs_file_t settingsFile;
+// void Settings::SaveSettingsToFile() {
+//   lfs_file_t settingsFile;
 
-  if (fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
-    return;
-  }
-  fs.FileWrite(&settingsFile, reinterpret_cast<uint8_t*>(&settings), sizeof(settings));
-  fs.FileClose(&settingsFile);
-}
+//   if (fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+//     return;
+//   }
+//   fs.FileWrite(&settingsFile, reinterpret_cast<uint8_t*>(&settings), sizeof(settings));
+//   fs.FileClose(&settingsFile);
+// }
 
 // std::vector<Data> Settings::LoadClocksFromFile() const {
 //   // printf("LoadClocksFromFile %d\n", 1);
@@ -193,9 +194,10 @@ void Settings::SaveSettingsToFile() {
 //   return data;
 // }
 
-std::vector<Data> Settings::LoadClocksFromFile() const {
+bool Settings::LoadClocksFromFile(std::vector<Data>& dataList) const {
   std::string bufferSettings;
-  std::vector<Data> dataList;
+
+  const char* filepath = "/clocks.txt";
 
   // lfs_file_t clocksFile;
   // if (fs.FileOpen(&clocksFile, "/clocks.txt", LFS_O_RDONLY) == LFS_ERR_OK) {
@@ -207,16 +209,13 @@ std::vector<Data> Settings::LoadClocksFromFile() const {
   // }
 
   lfs_info info = {0};
-  if (fs.Stat("/clocks.txt", &info) != LFS_ERR_NOENT) {
-    // printf("info.size %d\n", info.size);
+  if (fs.Stat(filepath, &info) != LFS_ERR_NOENT) {
 
     lfs_file_t clocksFile;
 
-    if (fs.FileOpen(&clocksFile, "/clocks.txt", LFS_O_RDONLY) == LFS_ERR_OK) {
-      // int openRes = fs.FileOpen(&clocksFile, "/clocks.txt", LFS_O_RDONLY);
+    if (fs.FileOpen(&clocksFile, filepath, LFS_O_RDONLY) == LFS_ERR_OK) {
+      // int openRes = fs.FileOpen(&clocksFile, filepath, LFS_O_RDONLY);
       // if (openRes == 0) {
-
-      // printf("FileOpen %d\n", 1);
 
       size_t bufferSize = info.size; // Adjust buffer size as needed
 
@@ -229,18 +228,15 @@ std::vector<Data> Settings::LoadClocksFromFile() const {
       bufferSettings.assign(readBuffer.begin(), readBuffer.begin() + bytesRead);
 
       fs.FileClose(&clocksFile);
+    } else {
+      return false;
     }
+  } else {
+    return false;
   }
 
   if (bufferSettings.empty()) {
-    // bufferSettings =
-    // "0|0|0|0|0|60,210,0,0,0,1;210,232,255,44,0,2;232,250,255,199,0,3;250,270,91,185,0,4;270,360,0,113,255,5;0,210,0,0,0,0\n0|0|0|0|1|0,30,255,44,0,6;30,60,50,50,50,1;60,150,255,166,0,5;150,165,255,199,0,4;165,195,91,185,0,7;195,210,0,207,255,8;210,240,0,113,255,6;240,255,128,66,209,9;270,300,0,0,0,1;270,570,0,0,0,0\n0|0|0|1|0|60,210,0,0,0,1;210,232,255,44,0,2;232,250,255,199,0,3;250,360,91,185,0,7;0,210,0,0,0,0\n0|0|0|1|1|0,30,255,44,0,6;30,60,50,50,50,1;60,90,255,166,0,10;90,195,91,185,0,7;195,210,0,207,255,8;210,240,0,113,255,6;240,255,128,66,209,9;270,300,0,0,0,1;270,570,0,0,0,0";
-    bufferSettings =
-      "0|0|0|0|60,210,0,0,0,1;210,232,255,44,0,2;232,250,255,199,0,1;250,270,91,185,0,1;270,360,0,113,255,1;0,210,0,0,0,0;0,"
-      "30,255,44,0,2;30,60,50,50,50,1;60,150,255,166,0,1;150,165,255,199,0,1;165,195,91,185,0,1;195,210,0,207,255,1;210,240,0,113,255,1;"
-      "240,255,128,66,209,1;270,300,0,0,0,1;270,570,0,0,0,0\n0|0|0|1|60,210,0,0,0,1;210,232,255,44,0,1;232,250,255,199,0,1;250,360,91,"
-      "185,0,1;0,210,0,0,0,0;0,30,255,44,0,1;30,60,50,50,50,1;60,90,255,166,0,1;90,195,91,185,0,1;195,210,0,207,255,1;210,240,0,"
-      "113,255,1;240,255,128,66,209,1;270,300,0,0,0,1;270,570,0,0,0,0";
+    return false;
   }
 
   size_t pos = 0;
@@ -248,8 +244,10 @@ std::vector<Data> Settings::LoadClocksFromFile() const {
   while ((newLinePos = bufferSettings.find('\n', pos)) != std::string::npos) {
     std::string line = bufferSettings.substr(pos, newLinePos - pos);
     if (!line.empty()) {
-      Data data = parseLine(line); // Assuming parseLine function exists
-      dataList.push_back(data);
+      Data data;
+      if (parseLine(line, data)) {
+        dataList.push_back(data);
+      }
     }
     pos = newLinePos + 1;
   }
@@ -258,90 +256,274 @@ std::vector<Data> Settings::LoadClocksFromFile() const {
   if (pos < bufferSettings.size()) {
     std::string line = bufferSettings.substr(pos);
     if (!line.empty()) {
-      Data data = parseLine(line); // Assuming parseLine function exists
-      dataList.push_back(data);
+      Data data;
+      if (parseLine(line, data)) {
+        dataList.push_back(data);
+      }
     }
   }
 
   bufferSettings.clear();
 
-  return dataList;
+  return true;
 }
 
-IntervalColor Settings::parseSlice(const std::string& sliceStr) const {
-  IntervalColor slice;
+// IntervalColor Settings::parseSlice(const std::string& sliceStr) const {
+//   IntervalColor slice;
+//   size_t pos = 0;
+//   size_t commaPos = sliceStr.find(',');
+
+//   slice.start = static_cast<int16_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
+//   pos = commaPos + 1;
+//   commaPos = sliceStr.find(',', pos);
+
+//   slice.end = static_cast<int16_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
+//   pos = commaPos + 1;
+//   commaPos = sliceStr.find(',', pos);
+
+//   slice.red = static_cast<uint8_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
+//   pos = commaPos + 1;
+//   commaPos = sliceStr.find(',', pos);
+
+//   slice.green = static_cast<uint8_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
+//   pos = commaPos + 1;
+//   commaPos = sliceStr.find(',', pos);
+
+//   slice.blue = static_cast<uint8_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
+//   pos = commaPos + 1;
+//   commaPos = sliceStr.find(',', pos);
+
+//   slice.icon = static_cast<uint8_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
+
+//   return slice;
+// }
+bool Settings::parseSlice(const std::string& sliceStr, IntervalColor& slice) const {
   size_t pos = 0;
-  size_t commaPos = sliceStr.find(',');
+  size_t commaPos;
+  std::vector<std::string> tokens;
 
-  slice.start = static_cast<int16_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
-  pos = commaPos + 1;
-  commaPos = sliceStr.find(',', pos);
+  while ((commaPos = sliceStr.find(',', pos)) != std::string::npos) {
+    tokens.push_back(sliceStr.substr(pos, commaPos - pos));
+    pos = commaPos + 1;
+  }
+  tokens.push_back(sliceStr.substr(pos)); // Last element
 
-  slice.end = static_cast<int16_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
-  pos = commaPos + 1;
-  commaPos = sliceStr.find(',', pos);
+  if (tokens.size() != 6)
+    return false;
 
-  slice.red = static_cast<uint8_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
-  pos = commaPos + 1;
-  commaPos = sliceStr.find(',', pos);
+  // auto isValidNumber = [](const std::string& str, bool allowNegative = false) {
+  //   if (str.empty())
+  //     return false;
+  //   size_t start = 0;
+  //   if (allowNegative && str[0] == '-') {
+  //     if (str.size() == 1)
+  //       return false;
+  //     start = 1;
+  //   }
+  //   // for (size_t i = start; i < str.size(); ++i) {
+  //   //   if (!std::isdigit(static_cast<unsigned char>(str[i])))
+  //   //     return false;
+  //   // }
+  //   return true;
+  // };
 
-  slice.green = static_cast<uint8_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
-  pos = commaPos + 1;
-  commaPos = sliceStr.find(',', pos);
+  // if (!isValidNumber(tokens[0]) || !isValidNumber(tokens[1]) || !isValidNumber(tokens[2]) || !isValidNumber(tokens[3]) ||
+  //     !isValidNumber(tokens[4]) || !isValidNumber(tokens[5])) {
+  //   return false;
+  // }
 
-  slice.blue = static_cast<uint8_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
-  pos = commaPos + 1;
-  commaPos = sliceStr.find(',', pos);
+  slice.start = static_cast<int16_t>(std::stoi(tokens[0]));
+  slice.end = static_cast<int16_t>(std::stoi(tokens[1]));
+  slice.red = static_cast<uint8_t>(std::stoi(tokens[2]));
+  slice.green = static_cast<uint8_t>(std::stoi(tokens[3]));
+  slice.blue = static_cast<uint8_t>(std::stoi(tokens[4]));
+  slice.icon = static_cast<uint8_t>(std::stoi(tokens[5]));
 
-  slice.icon = static_cast<uint8_t>(std::stoi(sliceStr.substr(pos, commaPos - pos)));
-
-  return slice;
+  return true;
 }
 
 std::vector<IntervalColor> Settings::parseSlices(const std::string& slicesStr) const {
   std::vector<IntervalColor> slices;
   size_t pos = 0;
   size_t semicolonPos;
+
   while ((semicolonPos = slicesStr.find(';', pos)) != std::string::npos) {
     std::string sliceStr = slicesStr.substr(pos, semicolonPos - pos);
-    slices.push_back(parseSlice(sliceStr));
+    IntervalColor slice;
+    if (parseSlice(sliceStr, slice)) {
+      slices.push_back(slice);
+    }
     pos = semicolonPos + 1;
   }
 
   // Handle the last slice
   if (pos < slicesStr.size()) {
-    slices.push_back(parseSlice(slicesStr.substr(pos)));
+    IntervalColor slice;
+    if (parseSlice(slicesStr.substr(pos), slice)) {
+      slices.push_back(slice);
+    }
   }
 
   return slices;
 }
 
-Data Settings::parseLine(const std::string& line) const {
+// Data Settings::parseLine(const std::string& line) const {
+//   // printf("parseLine: %s\n", line.c_str());
+
+//   Data data;
+//   size_t pos = 0;
+//   size_t firstPipe = line.find('|');
+
+//   // First value: 8-bit day mask
+//   uint8_t value = static_cast<uint8_t>(std::stoi(line.substr(0, firstPipe)));
+
+//   data.monday = (value >> 0) & 1;
+//   data.tuesday = (value >> 1) & 1;
+//   data.wednesday = (value >> 2) & 1;
+//   data.thursday = (value >> 3) & 1;
+//   data.friday = (value >> 4) & 1;
+//   data.saturday = (value >> 5) & 1;
+//   data.sunday = (value >> 6) & 1;
+//   // data.extraFlag = (value >> 7) & 1;
+
+//   // Find last pipe
+//   size_t lastPipe = line.rfind('|');
+
+//   // Extract the middle substring (between firstPipe+1 and lastPipe-1)
+//   std::string datesStr = line.substr(firstPipe + 1, lastPipe - firstPipe - 1);
+
+//   // Split middle section by '|'
+//   std::vector<std::string> datesStrings = splitString(datesStr, '|');
+//   std::vector<Date> dates;
+
+//   for (const std::string& d : datesStrings) {
+//     if (d.size() != 3) {
+//       // handle error: invalid date length
+//       continue;
+//     }
+
+//     Date date;
+//     date.day = static_cast<uint8_t>(d[0]);
+//     date.month = static_cast<uint8_t>(d[1]);
+//     date.year = 2000 + static_cast<uint8_t>(d[2]);
+
+//     dates.push_back(date);
+//   }
+
+//   data.dates = dates;
+
+//   // Extract last part (after last pipe) — semicolon-separated slices
+//   std::string lastSection = line.substr(lastPipe + 1);
+//   data.slices = parseSlices(lastSection);
+
+//   return data;
+// }
+bool Settings::parseLine(const std::string& line, Data& outData) const {
   // printf("parseLine: %s\n", line.c_str());
 
   Data data;
-  size_t pos = 0;
-  size_t pipePos;
+  size_t firstPipe = line.find('|');
+  size_t lastPipe = line.rfind('|'); // Find last pipe
 
-  pipePos = line.find('|', pos);
-  data.year = std::stoi(line.substr(pos, pipePos - pos));
-  pos = pipePos + 1;
+  // First value: 8-bit day mask
+  // uint8_t value = static_cast<uint8_t>(std::stoi(line.substr(0, firstPipe)));
+  std::string dayMaskStr = line.substr(0, firstPipe);
 
-  pipePos = line.find('|', pos);
-  data.month = std::stoi(line.substr(pos, pipePos - pos));
-  pos = pipePos + 1;
+  // if (!std::all_of(dayMaskStr.begin(), dayMaskStr.end(), ::isdigit)) {
+  //   return false;
+  // }
+  for (char c : dayMaskStr) {
+    if (!std::isdigit(static_cast<unsigned char>(c))) {
+      return false;
+    }
+  }
 
-  pipePos = line.find('|', pos);
-  data.day = std::stoi(line.substr(pos, pipePos - pos));
-  pos = pipePos + 1;
+  int temp = std::stoi(dayMaskStr);
+  if (temp < 0 || temp > 255) {
+    return false;
+  }
+  uint8_t value = static_cast<uint8_t>(temp);
 
-  pipePos = line.find('|', pos);
-  data.weekend = std::stoi(line.substr(pos, pipePos - pos));
-  pos = pipePos + 1;
+  data.monday = (value >> 0) & 1;
+  data.tuesday = (value >> 1) & 1;
+  data.wednesday = (value >> 2) & 1;
+  data.thursday = (value >> 3) & 1;
+  data.friday = (value >> 4) & 1;
+  data.saturday = (value >> 5) & 1;
+  data.sunday = (value >> 6) & 1;
+  // data.extraFlag = (value >> 7) & 1;
 
-  // printf("line.substr(pos): %s\n", line.substr(pos).c_str());
+  // Extract the middle substring (between firstPipe+1 and lastPipe-1)
+  std::string datesStr = line.substr(firstPipe + 1, lastPipe - firstPipe - 1);
 
-  data.slices = parseSlices(line.substr(pos));
+  // Split middle section by '|'
+  std::vector<std::string> datesStrings = splitString(datesStr, '|');
+  std::vector<Date> dates;
 
-  return data;
+  for (const std::string& d : datesStrings) {
+    // if (d.size() != 3) {
+    //   // handle error: invalid date length
+    //   continue;
+    // }
+    if (!isdigit(d[0]) || !isdigit(d[1]) || !isdigit(d[2]))
+      continue;
+
+    Date date;
+
+    // date.day = static_cast<uint8_t>(d[0]);
+    // date.month = static_cast<uint8_t>(d[1]);
+    // date.year = 2000 + static_cast<uint8_t>(d[2]);
+    date.day = d[0] - '0';
+    date.month = d[1] - '0';
+    date.year = 2000 + (d[2] - '0');
+
+    dates.push_back(date);
+  }
+
+  data.dates = dates;
+
+  // Extract last part (after last pipe) — semicolon-separated slices
+  std::string lastSection = line.substr(lastPipe + 1);
+  data.slices = parseSlices(lastSection);
+  if (data.slices.size() == 0) {
+    // std::cout << "data.slices.size(): " << data.slices.size() << std::endl;
+    // std::cout << "lastSection: " << lastSection << std::endl;
+    // std::cout << "firstPipe: " << firstPipe << std::endl;
+    // std::cout << "lastPipe: " << lastPipe << std::endl;
+    // std::cout << "line: " << line << std::endl;
+    return false;
+  }
+
+  outData = data;
+  return true;
 }
+
+std::vector<std::string> Settings::splitString(const std::string& str, char delimiter) const {
+  std::vector<std::string> result;
+  size_t start = 0;
+  size_t end = str.find(delimiter);
+
+  while (end != std::string::npos) {
+    result.push_back(str.substr(start, end - start));
+    start = end + 1;
+    end = str.find(delimiter, start);
+  }
+
+  // Add the last token
+  if (start < str.size()) {
+    result.push_back(str.substr(start));
+  }
+
+  return result;
+}
+
+// bool Settings::isValidNumber(const std::string& str) {
+//   if (str.empty())
+//     return false;
+//   size_t start = 0;
+//   for (size_t i = start; i < str.size(); ++i) {
+//     if (!std::isdigit(static_cast<unsigned char>(str[i])))
+//       return false;
+//   }
+//   return true;
+// }

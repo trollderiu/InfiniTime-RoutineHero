@@ -73,7 +73,7 @@ namespace Pinetime {
         void InitLvgl();
         void DrawTime(uint8_t hour, uint8_t min);
         int16_t GetAngle(uint8_t hour, uint8_t min);
-        void DrawPie(int16_t angle);
+        void DrawPie(int16_t angle, std::vector<IntervalColor> slices);
         void DrawSlice(IntervalColor a, int16_t angle);
         static void lvEventCb(lv_obj_t* obj, lv_event_t event);
         void DrawIcon(IntervalColor a, int16_t angle);
@@ -100,6 +100,7 @@ namespace Pinetime {
         lv_obj_t* plugIcon;
         lv_obj_t* bleIcon;
         // lv_obj_t* mainIcon;
+        bool wasEmpty = false;
 
         lv_obj_t* canvas;
         static uint8_t* cbuf;
@@ -118,7 +119,6 @@ namespace Pinetime {
         // DrawPie
         // uint8_t hour;
         // bool clock;
-        bool sClock2;
         std::vector<IntervalColor> slices;
         std::vector<IntervalColor> clockSlices;
 
