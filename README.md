@@ -38,6 +38,8 @@ Short videos of the app in use:
 ### 🚀 Initial setup
 [![Initial setup](https://img.youtube.com/vi/YKV8vJ6PzUU/maxresdefault.jpg)](https://www.youtube.com/shorts/YKV8vJ6PzUU)
 
+App on the Play Store: https://play.google.com/store/apps/details?id=com.routinehero
+
 ---
 
 ## 🎯 Key Features
