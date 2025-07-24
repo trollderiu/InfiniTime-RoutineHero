@@ -220,7 +220,6 @@ void RoutineHeroTimer::Refresh() {
 
   uint8_t hour24 = dateTimeController.Hours();
   uint8_t min = dateTimeController.Minutes();
-  uint16_t angle720 = hour24 * 30 + min / 2;
 
   Controllers::DateTime::Days day_of_week = dateTimeController.DayOfWeek();
 
@@ -273,9 +272,10 @@ void RoutineHeroTimer::Refresh() {
     slices = result[0].slices;
   }
 
+  uint16_t angle1440 = hour24 * 60 + min;
   uint8_t sliceIndex = 255;
   for (i = 0; i < slices.size(); ++i) {
-    if (angle720 >= slices[i].start * 2.5 && angle720 < slices[i].end * 2.5) {
+    if (angle1440 >= slices[i].start * 5 && angle1440 < slices[i].end * 5) {
       sliceIndex = i;
       break;
     }

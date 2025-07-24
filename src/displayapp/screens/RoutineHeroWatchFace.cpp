@@ -37,6 +37,7 @@ const Numbers RoutineHeroWatchFace::numbers[12] = {
 };
 
 uint8_t* RoutineHeroWatchFace::cbuf;
+
 // uint8_t* RoutineHeroWatchFace::cbuf = nullptr;
 
 RoutineHeroWatchFace::RoutineHeroWatchFace(Controllers::DateTime& dateTimeController,
@@ -201,11 +202,11 @@ void RoutineHeroWatchFace::Refresh() {
 
   uint8_t hour24 = dateTimeController.Hours();
   uint8_t min = dateTimeController.Minutes();
-  uint16_t angle720 = hour24 * 12 + min / 5;
+  uint16_t angle1440 = hour24 * 60 + min;
 
-  if (angle720 == dateTimeController.sAngle)
+  if (angle1440 == dateTimeController.sAngle)
     return;
-  dateTimeController.sAngle = angle720;
+  dateTimeController.sAngle = angle1440;
 
   std::vector<Data> dataList;
   bool clocksFile = settingsController.LoadClocksFromFile(dataList);
@@ -300,14 +301,14 @@ void RoutineHeroWatchFace::Refresh() {
 
   uint8_t sliceIndex = 255;
   for (i = 0; i < slices.size(); ++i) {
-    if (angle720 >= slices[i].start && angle720 < slices[i].end) {
+    if (angle1440 >= slices[i].start * 5 && angle1440 < slices[i].end * 5) {
       sliceIndex = i;
       break;
     }
   }
 
   // VIBRATE ALTHOUGH IS IDLE BUT NOT IF THE SAME ANGLE
-  asyncVibrate(angle720, sliceIndex);
+  asyncVibrate(angle1440, sliceIndex);
 
   if (state == DisplayApp::States::Idle)
     return;
@@ -338,9 +339,14 @@ void RoutineHeroWatchFace::Refresh() {
     return;
   }
 
-  DrawPie(angle720, slices);
-  CanvasReset(angle720 * 2.5);
-  DrawArrow(angle720 * 2.5);
+  uint16_t angle360 = angle1440;
+  if (hour24 >= 12)
+    angle360 = angle360 - 720;
+  angle360 = angle360 / 2;
+
+  DrawPie(angle1440, slices);
+  CanvasReset(angle360);
+  DrawArrow(angle360);
 }
 
 void RoutineHeroWatchFace::SetBatteryIcon() {
@@ -356,8 +362,7 @@ void RoutineHeroWatchFace::DrawTime(uint8_t hour, uint8_t min) {
   }
 }
 
-// angle720: Angle of the hour pointer from 0 to 720 (2 full circles)
-void RoutineHeroWatchFace::DrawPie(int16_t angle720, std::vector<IntervalColor> slices) {
+void RoutineHeroWatchFace::DrawPie(int16_t angle1440, std::vector<IntervalColor> slices) {
 
   // 360 OFFSET IF >12h
   uint8_t hour = dateTimeController.Hours();
@@ -377,7 +382,7 @@ void RoutineHeroWatchFace::DrawPie(int16_t angle720, std::vector<IntervalColor> 
   // GET CURRENT SLICE INDEX
   uint8_t sliceIndex = 254; //-2
   for (i = 0; i < clockSlices.size(); ++i) {
-    if (angle720 >= clockSlices[i].start && angle720 < clockSlices[i].end) {
+    if (angle1440 >= clockSlices[i].start * 5 && angle1440 < clockSlices[i].end * 5) {
       sliceIndex = i;
       break;
     }
@@ -393,17 +398,17 @@ void RoutineHeroWatchFace::DrawPie(int16_t angle720, std::vector<IntervalColor> 
 
     // DRAW SLICES:
     for (IntervalColor slice : clockSlices) {
-      DrawSlice(slice, angle720);
+      DrawSlice(slice, angle1440);
     }
 
     // DRAW ICONS:
     for (IntervalColor slice : clockSlices) {
-      DrawIcon(slice, angle720);
+      DrawIcon(slice, angle1440);
     }
   }
 }
 
-void RoutineHeroWatchFace::DrawSlice(IntervalColor slice, int16_t angle720) {
+void RoutineHeroWatchFace::DrawSlice(IntervalColor slice, int16_t angle1440) {
   if (slice.red == 0 && slice.green == 0 && slice.blue == 0)
     return;
 
@@ -433,11 +438,11 @@ void RoutineHeroWatchFace::DrawSlice(IntervalColor slice, int16_t angle720) {
   lv_obj_t* p = lv_arc_create(pie, nullptr);
   // lv_obj_set_click(p, false);
 
-  if (angle720 >= slice.start && angle720 < slice.end && 0 != slice.icon) {
+  if (angle1440 >= slice.start * 5 && angle1440 < slice.end * 5 && 0 != slice.icon) {
     lv_arc_set_radius(p, CANVAS_CENTER);
     color = lv_color_make((uint8_t) (slice.red * 0.9), (uint8_t) (slice.green * 0.9), (uint8_t) (slice.blue * 0.9));
-  } else if (slice.end < angle720) {
-    color = lv_color_make((uint8_t) (slice.red * 0.3), (uint8_t) (slice.green * 0.3), (uint8_t) (slice.blue * 0.3));
+  } else if (slice.end * 5 <= angle1440) {
+    color = lv_color_make((uint8_t) (slice.red * 0.25), (uint8_t) (slice.green * 0.25), (uint8_t) (slice.blue * 0.25));
   } else {
     color = lv_color_make((uint8_t) (slice.red * 0.6), (uint8_t) (slice.green * 0.6), (uint8_t) (slice.blue * 0.6));
   }
@@ -446,7 +451,7 @@ void RoutineHeroWatchFace::DrawSlice(IntervalColor slice, int16_t angle720) {
   lv_arc_set_bg_angles(p, start * 2.5, end * 2.5);
 }
 
-void RoutineHeroWatchFace::DrawIcon(IntervalColor slice, int16_t angle720) {
+void RoutineHeroWatchFace::DrawIcon(IntervalColor slice, int16_t angle1440) {
   if (slice.start == slice.end)
     return;
 
@@ -480,12 +485,12 @@ void RoutineHeroWatchFace::DrawIcon(IntervalColor slice, int16_t angle720) {
   }
 
   bool black = slice.red == 0 && slice.green == 0 && slice.blue == 0;
-  bool current = (angle720 >= slice.start && angle720 < slice.end) || (slices[dateTimeController.sSlice].icon == 0 && black);
+  bool current = (angle1440 >= slice.start * 5 && angle1440 < slice.end * 5) || (slices[dateTimeController.sSlice].icon == 0 && black);
 
   lv_color_t color = LV_COLOR_ICONS;
   if (current) {
     color = LV_COLOR_WHITE;
-  } else if (slice.end < angle720) {
+  } else if (slice.end * 5 < angle1440) {
     color = LV_COLOR_GRAY;
   }
 
@@ -501,7 +506,7 @@ void RoutineHeroWatchFace::DrawIcon(IntervalColor slice, int16_t angle720) {
   lv_obj_set_style_local_image_recolor(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, color);
   // lv_obj_set_style_local_image_recolor_opa(imgFlag, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, 200);
 
-  if (angle720 >= slice.start && angle720 < slice.end && 0 != slice.icon) {
+  if (angle1440 >= slice.start * 5 && angle1440 < slice.end * 5 && 0 != slice.icon) {
     lv_obj_set_click(imgFlag, true);
     lv_obj_set_event_cb(imgFlag, lvEventCb);
   }
@@ -538,7 +543,7 @@ void RoutineHeroWatchFace::polar_to_cartesian(int16_t angle_deg, uint8_t radius,
   *y = radius * sin(angle_rad);
 }
 
-void RoutineHeroWatchFace::asyncVibrate(int16_t angle720, uint8_t sliceIndex) {
+void RoutineHeroWatchFace::asyncVibrate(int16_t angle1440, uint8_t sliceIndex) {
 
   if (254 == sliceIndex)
     return;
@@ -548,7 +553,7 @@ void RoutineHeroWatchFace::asyncVibrate(int16_t angle720, uint8_t sliceIndex) {
     return;
 
   // ONLY VIBRATE AT THE START OF THE SLICE
-  if (angle720 != slices[sliceIndex].start)
+  if (angle1440 != slices[sliceIndex].start * 5)
     return;
 
   if (dateTimeController.sSlice < 254 && dateTimeController.sSlice != sliceIndex) {
