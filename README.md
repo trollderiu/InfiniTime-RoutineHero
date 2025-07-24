@@ -1,4 +1,3 @@
-
 ![Header Image](doc/img/header.jpg)
 
 # ⌚ RoutineHero – A Smartwatch Experience for Kids
@@ -21,16 +20,14 @@ RoutineHero displays these activities visually as **segments on a pie chart over
 
 Here are two GIFs showcasing RoutineHero on the watch:
 
-
-<div style="display: inline-block; text-align: center; margin-right: 15px; margin-bottom: 15px">
+<div align="center">
   <img src="doc/img/smartwatch_activities.gif" style="border-radius: 50px; box-shadow: rgba(0, 0, 0, 0.2) 0 4px 8px; padding: 40px; background: black; max-width: calc(100% - 80px)"><br>
   <strong>Time-lapse</strong>
-</div>
-<div style="display: inline-block; text-align: center; margin-right: 15px; margin-bottom: 15px">
+  <br>
+  <br>
   <img src="doc/img/smartwatch_timer.gif" style="border-radius: 50px; box-shadow: rgba(0, 0, 0, 0.2) 0 4px 8px; padding: 40px; background: black;max-width: calc(100% - 80px)"><br>
   <strong>Clock-Timer transitions</strong>
 </div>
-
 
 ---
 
