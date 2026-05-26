@@ -24,10 +24,11 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <timers.h>
+#include <atomic>
 #include <drivers/Hrs3300.h>
 #include <drivers/Bma421.h>
 
-#include "BootloaderVersion.h"
+// #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
@@ -147,15 +148,23 @@ Pinetime::System::SystemTask systemTask(spi,
                                         fs,
                                         touchHandler,
                                         buttonHandler);
-int mallocFailedCount = 0;
-int stackOverflowCount = 0;
+std::atomic<uint32_t> mallocFailedCount {0};
+std::atomic<uint32_t> stackOverflowCount {0};
+char stackOverflowTaskName[16] = {0};
 extern "C" {
 void vApplicationMallocFailedHook() {
-  mallocFailedCount++;
+  mallocFailedCount.fetch_add(1, std::memory_order_relaxed);
 }
 
-void vApplicationStackOverflowHook(TaskHandle_t /*xTask*/, char* /*pcTaskName*/) {
-  stackOverflowCount++;
+void vApplicationStackOverflowHook(TaskHandle_t /*xTask*/, char* pcTaskName) {
+  stackOverflowCount.fetch_add(1, std::memory_order_relaxed);
+  if (pcTaskName != nullptr) {
+    size_t i = 0;
+    for (; i < sizeof(stackOverflowTaskName) - 1 && pcTaskName[i] != '\0'; i++) {
+      stackOverflowTaskName[i] = pcTaskName[i];
+    }
+    stackOverflowTaskName[i] = '\0';
+  }
 }
 }
 /* Variable Declarations for variables in noinit SRAM
@@ -227,9 +236,9 @@ void RTC0_IRQHandler(void) {
   ((void (*)()) rtc0_isr_addr)();
 }
 
-void WDT_IRQHandler(void) {
-  nrf_wdt_event_clear(NRF_WDT_EVENT_TIMEOUT);
-}
+// void WDT_IRQHandler(void) {
+//   nrf_wdt_event_clear(NRF_WDT_EVENT_TIMEOUT);
+// }
 
 void npl_freertos_hw_set_isr(int irqn, void (*addr)()) {
   switch (irqn) {
@@ -347,7 +356,7 @@ int main() {
   debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, nullptr, DebounceTimerChargeCallback);
 
   // retrieve version stored by bootloader
-  Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
+  // Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
 
   if (NoInit_MagicWord == NoInit_MagicValue) {
     dateTimeController.SetCurrentTime(NoInit_BackUpTime);

@@ -134,7 +134,7 @@ def main():
         binFilename = name + '.bin'
         resource_files.append({
             "filename": binFilename,
-            "path": "/images/" + binFilename
+            "path": "/" + binFilename
         })
         binPath = source + "/src/resources/" + binFilename
         # print("binPath:")

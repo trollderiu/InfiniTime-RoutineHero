@@ -1,5 +1,16 @@
 #include "drivers/Watchdog.h"
 #include <mdk/nrf.h>
+
+namespace Pinetime {
+  namespace Drivers {
+    // Defining the actual memory location
+    uint32_t crash_pc __attribute__((section(".noinit")));
+    uint32_t crash_sp __attribute__((section(".noinit")));
+    uint32_t crash_lr __attribute__((section(".noinit")));
+    uint32_t crash_magic __attribute__((section(".noinit")));
+  }
+}
+
 using namespace Pinetime::Drivers;
 
 namespace {
@@ -111,6 +122,11 @@ void Watchdog::Setup(uint8_t timeoutSeconds, SleepBehaviour sleepBehaviour, Halt
   SetTimeout(timeoutSeconds);
   EnableFirstReloadRegister();
 
+  // --- ADD THIS: Enable Interrupt ---
+  NRF_WDT->INTENSET = WDT_INTENSET_TIMEOUT_Msk; 
+  NVIC_EnableIRQ(WDT_IRQn);
+  // ----------------------------------
+
   resetReason = ::GetResetReason();
 }
 
@@ -148,4 +164,22 @@ const char* Pinetime::Drivers::ResetReasonToString(Watchdog::ResetReason reason)
     default:
       return "Unknown";
   }
+}
+
+extern "C" void WDT_IRQHandler(void) {
+  uint32_t lr;
+  asm volatile("mov %0, lr" : "=r"(lr));
+
+  // On exception entry, LR holds EXC_RETURN. Bit 2 selects stack:
+  // 0 => MSP, 1 => PSP. The stacked PC is at word offset 6.
+  uint32_t* stackFrame = ((lr & (1u << 2)) == 0) ? reinterpret_cast<uint32_t*>(__get_MSP())
+                                                 : reinterpret_cast<uint32_t*>(__get_PSP());
+
+  crash_lr = lr;
+  crash_sp = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(stackFrame));
+  crash_pc = stackFrame[6];
+  crash_magic = CRASH_MAGIC_VALUE;
+
+  // Clear the event so we don't loop (though reset is imminent)
+  NRF_WDT->EVENTS_TIMEOUT = 0;
 }

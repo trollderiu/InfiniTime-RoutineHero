@@ -1,5 +1,7 @@
 #include "components/ble/NimbleController.h"
 #include <cstring>
+#include <FreeRTOS.h>
+#include <task.h>
 
 #include <nrf_log.h>
 #define min // workaround: nimble's min/max macros conflict with libstdc++
@@ -49,7 +51,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     heartRateService {*this, heartRateController},
     motionService {*this, motionController},
     fsService {systemTask, fs, dateTimeController},
-    serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
+    serviceDiscovery({&currentTimeClient}) {
 }
 
 void nimble_on_reset(int reason) {
@@ -91,10 +93,10 @@ void NimbleController::Init() {
   // musicService.Init();
   // weatherService.Init();
   // navService.Init();
-  anService.Init();
+  // anService.Init();
   dfuService.Init();
   batteryInformationService.Init();
-  immediateAlertService.Init();
+  // immediateAlertService.Init();
   heartRateService.Init();
   motionService.Init();
   fsService.Init();
@@ -199,7 +201,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       if (event->connect.status != 0) {
         /* Connection failed; resume advertising. */
         currentTimeClient.Reset();
-        alertNotificationClient.Reset();
+        // alertNotificationClient.Reset();
         connectionHandle = BLE_HS_CONN_HANDLE_NONE;
         bleController.Disconnect();
         fastAdvCount = 0;
@@ -222,7 +224,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       }
 
       currentTimeClient.Reset();
-      alertNotificationClient.Reset();
+      // alertNotificationClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
       if (bleController.IsConnected()) {
         bleController.Disconnect();
@@ -239,12 +241,27 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
 
     case BLE_GAP_EVENT_CONN_UPDATE_REQ:
       /* The central has requested updated connection parameters */
-      NRF_LOG_INFO("Update event : BLE_GAP_EVENT_CONN_UPDATE_REQ");
-      NRF_LOG_INFO("update request : itvl_min=%d itvl_max=%d latency=%d supervision=%d",
-                   event->conn_update_req.peer_params->itvl_min,
-                   event->conn_update_req.peer_params->itvl_max,
-                   event->conn_update_req.peer_params->latency,
-                   event->conn_update_req.peer_params->supervision_timeout);
+      {
+        static uint32_t connUpdateReqCount = 0;
+        static TickType_t connUpdateWindowStart = 0;
+        const TickType_t now = xTaskGetTickCount();
+        if (connUpdateWindowStart == 0) {
+          connUpdateWindowStart = now;
+        }
+        connUpdateReqCount++;
+
+        // Log at most once every ~2 seconds to avoid log-storm feedback.
+        if ((now - connUpdateWindowStart) >= pdMS_TO_TICKS(2000)) {
+          NRF_LOG_INFO("CONN_UPDATE_REQ rate=%u/2s (last itvl_min=%d itvl_max=%d lat=%d sup=%d)",
+                       connUpdateReqCount,
+                       event->conn_update_req.peer_params->itvl_min,
+                       event->conn_update_req.peer_params->itvl_max,
+                       event->conn_update_req.peer_params->latency,
+                       event->conn_update_req.peer_params->supervision_timeout);
+          connUpdateReqCount = 0;
+          connUpdateWindowStart = now;
+        }
+      }
       break;
 
     case BLE_GAP_EVENT_ENC_CHANGE:
@@ -369,7 +386,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    event->notify_rx.attr_handle,
                    notifSize);
 
-      alertNotificationClient.OnNotification(event);
+      // alertNotificationClient.OnNotification(event);
     } break;
 
     case BLE_GAP_EVENT_NOTIFY_TX:

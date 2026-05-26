@@ -43,13 +43,16 @@ RoutineHeroTimer::RoutineHeroTimer(Controllers::DateTime& dateTimeController,
     settingsController {settingsController},
     brightnessController {brightnessController},
     currentDateTime {{}} {
-  vibrationTimer = xTimerCreate("vibrationTimer", 1, pdTRUE, this, Vibrate);
+  vibrationTimer = xTimerCreate("vibrationTimer", 1, pdFALSE, this, Vibrate);
 
+  // Cargamos el archivo una sola vez
+  this->clocksFile = settingsController.LoadClocksFromFile(this->dataList);
+
+  dateTimeController.sSlice = 255;
   init = false;
   sUpdate = -1;
   sHour = -1;
   sMin = -1;
-  sSlice = 255;
 
   // red: 254,44,7
   // orange: 255,126,2
@@ -160,7 +163,7 @@ RoutineHeroTimer::RoutineHeroTimer(Controllers::DateTime& dateTimeController,
   lv_obj_set_click(canvas, false);
   lv_obj_set_hidden(canvas, true);
   if (cbuf == nullptr)
-    cbuf = new uint8_t[520](); //(64+1) * 64 / 8
+    cbuf = new uint8_t[CANVAS_BUFFER_SIZE](); //(64+1) * 64 / 8
   lv_canvas_set_buffer(canvas, cbuf, CANVAS_WIDTH, CANVAS_WIDTH, LV_IMG_CF_INDEXED_1BIT);
   lv_canvas_set_palette(canvas, 0, LV_COLOR_TRANSP);
   lv_canvas_set_palette(canvas, 1, LV_COLOR_GAINSBORO);
@@ -176,6 +179,15 @@ RoutineHeroTimer::RoutineHeroTimer(Controllers::DateTime& dateTimeController,
 }
 
 RoutineHeroTimer::~RoutineHeroTimer() {
+  // evitar Memory Leaks
+  if (cbuf != nullptr) {
+    delete[] cbuf;
+    cbuf = nullptr;
+  }
+  if (vibrationTimer != nullptr) {
+    xTimerDelete(vibrationTimer, 0);
+  }
+
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
@@ -218,22 +230,35 @@ void RoutineHeroTimer::Refresh() {
   if (!currentDateTime.IsUpdated())
     return;
 
+  if (this->dataList.empty()) {
+    return;
+  }
+
+  uint8_t year = static_cast<uint8_t>(dateTimeController.Year() - 2000);
+  uint8_t month = static_cast<uint8_t>(dateTimeController.Month());
+  uint8_t day = dateTimeController.Day();
+
   uint8_t hour24 = dateTimeController.Hours();
   uint8_t min = dateTimeController.Minutes();
 
   Controllers::DateTime::Days day_of_week = dateTimeController.DayOfWeek();
 
-  settingsController.LoadClocksFromFile(dataList);
-
-  if (dataList.empty()) {
-    return;
-  }
-
   result = std::vector<Data>();
   for (const auto& data : dataList) {
 
-    bool activeToday = false;
+    // Loop through all dates for this data
+    if (!data.dates.empty()) {
+      for (const auto& date : data.dates) {
+        if (date.day == day && date.month == month && date.year == year) {
+          // Found a matching date
+          result.push_back(data);
+          break; // No need to check other dates
+        }
+      }
+      if (result.size() > 0) break;
+    }
 
+    bool activeToday = false;
     switch (day_of_week) {
       case Controllers::DateTime::Days::Monday:
         activeToday = data.monday;
@@ -263,6 +288,7 @@ void RoutineHeroTimer::Refresh() {
 
     if (activeToday) {
       result.push_back(data);
+      break;
     }
   }
 
@@ -273,6 +299,7 @@ void RoutineHeroTimer::Refresh() {
   }
 
   uint16_t angle1440 = hour24 * 60 + min;
+
   uint8_t sliceIndex = 255;
   for (i = 0; i < slices.size(); ++i) {
     if (angle1440 >= slices[i].start * 5 && angle1440 < slices[i].end * 5) {
@@ -281,7 +308,10 @@ void RoutineHeroTimer::Refresh() {
     }
   }
 
-  asyncVibrate(sliceIndex);
+  asyncVibrate(angle1440, sliceIndex);
+
+  if (dateTimeController.sSlice != sliceIndex)
+    dateTimeController.sSlice = sliceIndex;
 
   if (state == DisplayApp::States::Idle)
     return;
@@ -324,7 +354,7 @@ void RoutineHeroTimer::Refresh() {
     lv_obj_set_hidden(major_line, true);
     lv_obj_set_hidden(number0, false);
     lv_obj_set_hidden(nextIcon, true);
-    lv_img_set_src(currentIcon, "F:/images/1.bin");
+    lv_img_set_src(currentIcon, "F:/1.bin");
     lv_obj_set_pos(currentIcon, 108, 108);
     lv_obj_set_style_local_image_recolor(currentIcon, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_SILVER);
     return;
@@ -351,20 +381,58 @@ void RoutineHeroTimer::Refresh() {
   DrawIcon(angleLeft, sliceIndex);
 }
 
-void RoutineHeroTimer::asyncVibrate(uint8_t sliceIndex) {
-  if (sSlice < 254 && sSlice != sliceIndex) {
-    xTimerStart(vibrationTimer, 0);
+void RoutineHeroTimer::asyncVibrate(int16_t angle1440, uint8_t sliceIndex) {
+
+  // IGNORE IF NO PREVIUS DATA
+  if (dateTimeController.sSlice >= 254)
+    return;
+
+  // IGNORE MISSING SLICES
+  if (sliceIndex >= 254)
+    return;
+
+  // IGNORE IF COMES FROM SLEEPING TIME
+  if (dateTimeController.sSlice < 2)
+    return;
+
+  // IGNORE IF GOES TO SLEEP (IF KID ALREADY SPEEPING?)
+  if (sliceIndex < 2)
+    return;
+
+  // ONLY VIBRATE AT THE START OF THE SLICE
+  if (angle1440 != slices[sliceIndex].start * 5)
+    return;
+
+if (dateTimeController.sSlice != sliceIndex) {
+    vibrationStep = 0; 
+    xTimerChangePeriod(vibrationTimer, pdMS_TO_TICKS(10), 0); 
   }
 }
 
-void RoutineHeroTimer::Vibrate(TimerHandle_t /* xTimer */) {
-  nrf_gpio_pin_clear(PinMap::Motor);
-  vTaskDelay(100);
-  nrf_gpio_pin_set(PinMap::Motor);
-  vTaskDelay(500);
-  nrf_gpio_pin_clear(PinMap::Motor);
-  vTaskDelay(100);
-  nrf_gpio_pin_set(PinMap::Motor);
+void RoutineHeroTimer::Vibrate(TimerHandle_t xTimer) {
+  auto* timerApp = static_cast<RoutineHeroTimer*>(pvTimerGetTimerID(xTimer));
+
+  switch (timerApp->vibrationStep) {
+    case 0: 
+      nrf_gpio_pin_clear(PinMap::Motor); 
+      xTimerChangePeriod(xTimer, pdMS_TO_TICKS(100), 0); 
+      timerApp->vibrationStep = 1;
+      break;
+    case 1: 
+      nrf_gpio_pin_set(PinMap::Motor);
+      xTimerChangePeriod(xTimer, pdMS_TO_TICKS(500), 0); 
+      timerApp->vibrationStep = 2;
+      break;
+    case 2: 
+      nrf_gpio_pin_clear(PinMap::Motor);
+      xTimerChangePeriod(xTimer, pdMS_TO_TICKS(100), 0); 
+      timerApp->vibrationStep = 3;
+      break;
+    case 3: 
+      nrf_gpio_pin_set(PinMap::Motor);
+      xTimerStop(xTimer, 0);
+      break;
+  }
 }
 
 void RoutineHeroTimer::DrawSlice(uint16_t angle, uint8_t sliceIndex) {
@@ -420,7 +488,7 @@ void RoutineHeroTimer::DrawIcon(uint16_t angle, uint8_t sliceIndex) {
     if (nextIndex < slices.size())
       nextIconIndex = slices[nextIndex].icon;
 
-    lv_img_set_src(nextIcon, ("F:/images/" + std::to_string(nextIconIndex) + ".bin").c_str());
+    lv_img_set_src(nextIcon, ("F:/" + std::to_string(nextIconIndex) + ".bin").c_str());
     lv_obj_set_hidden(nextIcon, false);
   } else {
     lv_obj_set_hidden(nextIcon, true);
@@ -432,7 +500,7 @@ void RoutineHeroTimer::DrawIcon(uint16_t angle, uint8_t sliceIndex) {
     currentIconIndex = slices[sliceIndex].icon;
   if (0 == currentIconIndex)
     currentIconIndex = 1;
-  lv_img_set_src(currentIcon, ("F:/images/" + std::to_string(currentIconIndex) + ".bin").c_str());
+  lv_img_set_src(currentIcon, ("F:/" + std::to_string(currentIconIndex) + ".bin").c_str());
 
   if (angle >= 360) {
     angle = 360;
@@ -461,9 +529,8 @@ void RoutineHeroTimer::DrawArrow(int16_t angle) {
 }
 
 void RoutineHeroTimer::polar_to_cartesian(int16_t angle_deg, uint8_t radius, int8_t* x, int8_t* y) {
-  float angle_rad = angle_deg * 0.017453293; // 3.14159265358979323846 / 180.0;
-  *x = radius * cos(angle_rad);
-  *y = radius * sin(angle_rad);
+  *x = (radius * _lv_trigo_sin(angle_deg + 90)) >> 15; 
+  *y = (radius * _lv_trigo_sin(angle_deg)) >> 15;
 }
 
 void RoutineHeroTimer::position_image_on_circle(lv_obj_t* img, uint8_t center_x, uint8_t center_y, uint8_t radius, int16_t angle_deg) {
@@ -476,7 +543,7 @@ void RoutineHeroTimer::position_image_on_circle(lv_obj_t* img, uint8_t center_x,
 void RoutineHeroTimer::DrawTime(uint8_t hour, uint8_t min) {
   if (sHour != hour || sMin != min) {
     sHour = hour;
-    sHour = min;
+    sMin = min;
     lv_label_set_text_fmt(label_time, "#cccccc %02d:%02d", hour, min);
   }
 }

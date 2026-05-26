@@ -37,6 +37,7 @@ extern "C" {
 #define GATT_DEVICE_INFO_UUID                   0x180A
 #define GATT_MANUFACTURER_NAME_UUID             0x2A29
 #define GATT_MODEL_NUMBER_UUID                  0x2A24
+// #define GATT_FIRMWARE_VERIFIED_UUID             0x2A99
 
 /*CSC Measurement flags*/
 #define CSC_MEASUREMENT_WHEEL_REV_PRESENT       0x01

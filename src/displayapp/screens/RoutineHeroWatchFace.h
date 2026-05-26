@@ -72,17 +72,18 @@ namespace Pinetime {
         // Methods
         void InitLvgl();
         void DrawTime(uint8_t hour, uint8_t min);
+        void DrawName();
         int16_t GetAngle(uint8_t hour, uint8_t min);
         void DrawPie(int16_t angle, std::vector<IntervalColor> slices);
-        void DrawSlice(IntervalColor a, int16_t angle);
+        void DrawSlice(IntervalColor a, int16_t angle288, int16_t wakeup288);
         static void lvEventCb(lv_obj_t* obj, lv_event_t event);
-        void DrawIcon(IntervalColor a, int16_t angle);
+        void DrawIcon(IntervalColor a, int16_t angle288, int16_t wakeup288);
         void CanvasReset(int16_t angle);
         void DrawArrow(int16_t angle);
         void SetBatteryIcon();
         void polar_to_cartesian(int16_t angle_deg, uint8_t radius, int8_t* x, int8_t* y);
         void position_image_on_circle(lv_obj_t* img, uint8_t center_x, uint8_t center_y, uint8_t radius, int16_t angle_deg);
-        void asyncVibrate(int16_t angle720, uint8_t index);
+        void asyncVibrate(int16_t angle1440, uint8_t index);
         static void Vibrate(TimerHandle_t xTimer);
 
         // Main
@@ -93,6 +94,7 @@ namespace Pinetime {
         uint8_t i, sHour, sMin;
         lv_obj_t* pie;
         lv_obj_t* label_time;
+        lv_obj_t* label_name;
         lv_obj_t* minor_scales;
         lv_obj_t* major_scales;
         // lv_obj_t* major_line;
@@ -159,6 +161,9 @@ namespace Pinetime {
 
         std::vector<Data> dataList;
         std::vector<Data> result;
+
+        uint8_t vibrationStep = 0;
+        bool clocksFile = false;
       };
     }
 

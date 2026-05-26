@@ -6,6 +6,8 @@
 #include "displayapp/apps/Apps.h"
 #include <vector> //GetSchedule()
 
+#include <drivers/Watchdog.h>
+
 struct Date {
   uint8_t day;
   uint8_t month;
@@ -92,7 +94,9 @@ namespace Pinetime {
       Settings(Settings&&) = delete;
       Settings& operator=(Settings&&) = delete;
 
-      void Init();
+      // void Init();
+      void Init(Drivers::Watchdog::ResetReason reason = Drivers::Watchdog::ResetReason::HardReset);
+
       // void SaveSettings();
 
       // void SetWatchFace(Pinetime::Applications::WatchFace face) {
@@ -246,7 +250,8 @@ namespace Pinetime {
       // };
 
       uint32_t GetScreenTimeOut() const {
-        return settings.screenTimeOut;
+        // return settings.screenTimeOut;
+        return 20000;
       };
 
       // bool GetAlwaysOnDisplay() const {
@@ -334,6 +339,7 @@ namespace Pinetime {
       };
 
       bool LoadClocksFromFile(std::vector<Data>& dataList) const;
+      bool GetFileContent(const std::string& filename, std::string& outputString) const;
 
     private:
       Pinetime::Controllers::FS& fs;
@@ -344,7 +350,6 @@ namespace Pinetime {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
         // uint32_t screenTimeOut = 15000;
-        uint32_t screenTimeOut = 30000;
 
         // bool alwaysOnDisplay = false;
 
@@ -386,6 +391,7 @@ namespace Pinetime {
       std::vector<IntervalColor> parseSlices(const std::string& slicesStr) const;
       bool parseLine(const std::string& line, Data& outData) const;
       std::vector<std::string> splitString(const std::string& str, char delimiter) const;
+      uint8_t base64CharToNum(char c) const;
       void processBufferSettings(const std::string &bufferSettings, std::vector<Data> &dataList) const;
       // bool isValidNumber(const std::string& str);
     };

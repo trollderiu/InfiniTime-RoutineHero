@@ -16,6 +16,9 @@
 // #define m 30
 #define m 0
 
+// 512 bytes de datos + 8 bytes para la paleta de 2 colores (formato lv_color_t)
+#define CANVAS_BUFFER_SIZE ((CANVAS_WIDTH * CANVAS_WIDTH / 8) + (2 * sizeof(lv_color_t)))
+
 struct TimerNumbers {
   uint8_t x;
   uint8_t y;
@@ -42,12 +45,11 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::BrightnessController& brightnessController;
 
-        uint8_t sSlice;
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
 
         void DrawTime(uint8_t hour, uint8_t min);
 
-        uint8_t sUpdate = -1;
+        uint16_t sUpdate = 0xFFFF;
 
         // DrawTime
         uint8_t sHour = -1;
@@ -76,7 +78,7 @@ namespace Pinetime {
         void print_colors(const lv_color32_t *colors, size_t num_colors);
 
         TimerHandle_t vibrationTimer;
-        void asyncVibrate(uint8_t sliceIndex);
+        void asyncVibrate(int16_t angle1440, uint8_t sliceIndex);
         static void Vibrate(TimerHandle_t xTimer);
         
         lv_task_t* taskRefresh;
@@ -119,6 +121,9 @@ namespace Pinetime {
 
         std::vector<Data> dataList;
         std::vector<Data> result;
+
+        uint8_t vibrationStep = 0;
+        bool clocksFile = false;
       };
     }
   }

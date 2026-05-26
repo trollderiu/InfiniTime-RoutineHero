@@ -106,6 +106,22 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
   ble_gattc_notify_custom(connectionHandle, stepCountHandle, om);
 }
 
+void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
+  if (!motionValuesNoficationEnabled)
+    return;
+
+  int16_t buffer[3] = {x, y, z};
+  auto* om = ble_hs_mbuf_from_flat(buffer, 3 * sizeof(int16_t));
+
+  uint16_t connectionHandle = nimble.connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, motionValuesHandle, om);
+}
+
 void MotionService::OnDeltaMotionValues(int16_t x, int16_t y, int16_t z, uint8_t hours, uint8_t minutes) {
   // if (x || y || z || hours || minutes)
   //   return;
@@ -142,22 +158,6 @@ void MotionService::OnDeltaMotionValues(int16_t x, int16_t y, int16_t z, uint8_t
     now = 0;
 
   motionData[now] += std::abs(x) + std::abs(y) + std::abs(z);
-}
-
-void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
-  if (!motionValuesNoficationEnabled)
-    return;
-
-  int16_t buffer[3] = {x, y, z};
-  auto* om = ble_hs_mbuf_from_flat(buffer, 3 * sizeof(int16_t));
-
-  uint16_t connectionHandle = nimble.connHandle();
-
-  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
-    return;
-  }
-
-  ble_gattc_notify_custom(connectionHandle, motionValuesHandle, om);
 }
 
 void MotionService::SubscribeNotification(uint16_t attributeHandle) {

@@ -61,8 +61,7 @@ ButtonActions ButtonHandler::HandleEvent(Events event) {
         xTimerChangePeriod(buttonTimer, longerPressTime - longPressTime - doubleClickTime, 0);
         xTimerStart(buttonTimer, 0);
         state = States::LongHeld;
-        // return ButtonActions::LongPress;
-        return ButtonActions::None;
+        return ButtonActions::LongPress;
       }
       break;
     case States::LongHeld:

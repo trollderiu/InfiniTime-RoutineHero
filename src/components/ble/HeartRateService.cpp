@@ -73,11 +73,15 @@ void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
 }
 
 void HeartRateService::SubscribeNotification(uint16_t attributeHandle) {
-  if (attributeHandle == heartRateMeasurementHandle)
+  if (attributeHandle == heartRateMeasurementHandle) {
     heartRateMeasurementNotificationEnable = true;
+    heartRateController.Start();
+  }
 }
 
 void HeartRateService::UnsubscribeNotification(uint16_t attributeHandle) {
-  if (attributeHandle == heartRateMeasurementHandle)
+  if (attributeHandle == heartRateMeasurementHandle) {
     heartRateMeasurementNotificationEnable = false;
+    heartRateController.Stop();
+  }
 }

@@ -1,157 +1,46 @@
-![Header Image](doc/img/header.jpg)
+## Show diff from Infinitime 1.15 / 1.16
 
-# ⌚ RoutineHero – A Smartwatch Experience for Kids
+```
+# 1.15.0:
+git diff 1.15.0 --stat -- src ':!README.md' ':!src/libs' ':!src/displayapp/icons' ':!src/displayapp/fonts' ':!src/displayapp/widgets' ':!src/resources' ':!src/displayapp/screens' | cat
 
-> **Forked from [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)**  
-> Full credit and thanks to the original InfiniTime team for their amazing open-source smartwatch firmware project!
+# 1.16.0:
+git diff 1.16.0 --stat -- src ':!README.md' ':!src/libs' ':!src/displayapp/icons' ':!src/displayapp/fonts' ':!src/displayapp/widgets' ':!src/resources' ':!src/displayapp/screens' | cat
+```
 
----
+## Test using j-link
 
-## 📘 About
+```
+openocd -f interface/jlink.cfg -c "transport select swd" -f target/nrf52.cfg -c "\
+init; halt; reset_config none; \
+flash erase_address 0x00000000 0x80000; \
+program /media/oscar/disk3/var/www/html/pinetime-mcuboot-bootloader-10/bin/targets/nrf52_boot/app/@mcuboot/boot/mynewt/mynewt.elf.bin verify 0x00000000; \
+program /media/oscar/disk3/var/www/html/InfiniSim4/InfiniTime/build/output/src/pinetime-mcuboot-app-image-1.15.0.bin verify 0x8000; \
+reset run; exit"
+```
 
-**RoutineHero** is a fun and structured smartwatch experience built for kids, based on the InfiniTime firmware.  
-As a parent, you define a daily routine made up of activities — like brushing teeth, reading, playtime, etc. — and the watch guides your child throughout the day.
+## Test mostrando logs:
 
-RoutineHero displays these activities visually as **segments on a pie chart over an analog-style clock face**, giving kids a sense of time and structure in a playful and intuitive way.
+```
+openocd -f interface/jlink.cfg -c "transport select swd" -f target/nrf52.cfg -c "\
+init; \
+halt; \
+program /media/oscar/disk3/var/www/html/pinetime-mcuboot-bootloader-10/bin/targets/nrf52_boot/app/@mcuboot/boot/mynewt/mynewt.elf.bin verify 0x00000000; \
+program /media/oscar/disk3/var/www/html/InfiniSim4/InfiniTime/build/output/src/pinetime-mcuboot-app-image-1.15.0.bin verify 0x8000; \
+rtt setup 0x20000000 0x10000 \"SEGGER RTT\"; \
+rtt start; \
+rtt server start 9001 0; \
+reset run; \
+rtt polling_interval 100"
+```
 
----
+telnet localhost 9001
 
-## 🖼 Smartwatch in Action
+## Deploy
 
-Here are two GIFs showcasing RoutineHero on the watch:
-
-<div align="center">
-  <img src="doc/img/smartwatch_activities.gif" style="border-radius: 50px; box-shadow: rgba(0, 0, 0, 0.2) 0 4px 8px; padding: 40px; background: black; max-width: calc(100% - 80px)"><br>
-  <strong>Time-lapse</strong>
-  <br>
-  <br>
-  <img src="doc/img/smartwatch_timer.gif" style="border-radius: 50px; box-shadow: rgba(0, 0, 0, 0.2) 0 4px 8px; padding: 40px; background: black;max-width: calc(100% - 80px)"><br>
-  <strong>Clock-Timer transitions</strong>
-</div>
-
----
-
-## 📱 App Demonstration
-
-Short videos of the app in use:
-
-### 🚀 Initial setup
-[![Initial setup](https://img.youtube.com/vi/YKV8vJ6PzUU/maxresdefault.jpg)](https://www.youtube.com/shorts/YKV8vJ6PzUU)
-
-App on the Play Store: https://play.google.com/store/apps/details?id=com.routinehero
-
----
-
-## 🎯 Key Features
-
-- 🧭 **Analog Clock UI with Activity Pie Chart**  
-  Each segment of the analog clock represents an activity in the child’s day.
-
-- 👨‍👩‍👧‍👦 **Parent-Defined Routine**  
-  Define your child’s daily routine with a simple config (custom app or BLE tool integration planned).
-
-- 🔔 **Gentle Time Awareness**  
-  Visual reminders help kids understand when it's time to transition to the next task.
-
-- 🎨 **Kid-Friendly Design**  
-  Clean, colorful UI tailored for younger users with simplified interactions.
-
-- 💡 **Based on InfiniTime**  
-  Leverages the powerful open-source firmware platform that runs on PineTime and compatible devices.
-
----
-
-## 📱 Devices Supported
-
-RoutineHero runs on devices compatible with InfiniTime, including:
-
-- PineTime (nRF52832)
-- Dev boards supporting BLE and compatible display controllers (with porting)
-
----
-
-## 🚀 Getting Started
-
-### Easiest way: Flash the pre-built DFU file
-
-1. Download the latest DFU package from the repo:  
-   [`doc/dfu/pinetime-mcuboot-app-dfu-1.15.0.zip`](doc/dfu/pinetime-mcuboot-app-dfu-1.15.0.zip)
-
-2. Use a Bluetooth Low Energy (BLE) capable DFU tool to flash the firmware to your PineTime device, for example:
-   - [Watchmate for Linux (works great for me)](https://github.com/azymohliad/watchmate)  
-   - [nRF Connect (mobile app)](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-mobile)  
-   - [nRF Connect for Desktop](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop)
-
-3. Follow the instructions in the DFU tool to upload the firmware to your watch over BLE.
-
----
-
-### 📱 Configure Your Child’s Routine
-
-After flashing the watch, use the official **RoutineHero Parent App** to set up daily routines and activities:
-
-➡️ [**Download from Google Play**](https://play.google.com/store/apps/details?id=com.routinehero)
-
-This app lets you:
-- Create and manage a daily schedule
-- Set icons, names, and durations for each task
-- Sync routines wirelessly to the watch
-
-*iOS support is planned for the future.*
-
----
-
-### 🛠 Building from Source (Optional)
-
-Want to build or customize the firmware yourself?
-
-1. **Clone the Repo**
-   ```bash
-   git clone https://github.com/trollderiu/InfiniTime-RoutineHero.git
-   cd InfiniTime-RoutineHero
-   ```
-
-2. **Build the Firmware**  
-   Follow the [InfiniTime build instructions](https://github.com/InfiniTimeOrg/InfiniTime#building-the-firmware), as they apply here too.
-   ```bash
-   docker pull --platform linux/amd64 infinitime/infinitime-build
-   docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime/infinitime-build
-   ```
-
-3. **Flash to Device**  
-   Use your preferred method (DFU, SWD, etc.) to upload to your PineTime or compatible hardware.
-
----
-
-## 📂 Project Structure
-
-This project retains much of the original InfiniTime code, with key changes including:
-
-- `src/display/RoutineHeroWatchFace.cpp` – Custom watchface with pie chart overlay
-- `src/display/RoutineHeroTimer.cpp` – Screen with time left for the current activity
-- `resources/images/` – Custom icons for kid-friendly interface
-
-More detailed module descriptions coming soon.
-
----
-
-## 🛠 Contributing
-
-Want to help improve RoutineHero? PRs and suggestions are welcome!  
-Check the [Issues](https://github.com/trollderiu/InfiniTime-RoutineHero/issues) tab for bugs and roadmap items.
-
----
-
-## 🙏 Credits
-
-RoutineHero is powered by:
-
-- [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime) – Original firmware base
-- [LittlevGL (LVGL)](https://lvgl.io/) – Embedded graphics library
-- The open-source community ❤️
-
----
-
-## 📄 License
-
-RoutineHero inherits the [InfiniTime license](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/LICENSE) (Apache 2.0).
+```
+# BUILD FROM /Infinitime (cd InfiniTime):
+docker pull --platform linux/amd64 infinitime/infinitime-build
+rm -rf build
+docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime/infinitime-build
+```

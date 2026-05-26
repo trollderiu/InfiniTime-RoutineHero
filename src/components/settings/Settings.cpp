@@ -4,8 +4,14 @@
 #include <vector> //GetSchedule()
 // #include <iostream>
 #include <algorithm>
+#include <atomic>
+
+#include "drivers/Watchdog.h"
 
 using namespace Pinetime::Controllers;
+extern std::atomic<uint32_t> mallocFailedCount;
+extern std::atomic<uint32_t> stackOverflowCount;
+extern char stackOverflowTaskName[16];
 
 Settings::Settings(Pinetime::Controllers::FS& fs) : fs {fs} {
 }
@@ -22,9 +28,57 @@ Settings::Settings(Pinetime::Controllers::FS& fs) : fs {fs} {
 //   fs.FileClose(&settingsFile);
 // }
 
-void Settings::Init() {
+void Settings::Init(Drivers::Watchdog::ResetReason reason) {
+  // We only log if it's NOT a standard power-on (HardReset)
+  // If you want to log power-ons too, just remove this 'if'
+  if (reason != Drivers::Watchdog::ResetReason::HardReset) {
+    lfs_file_t logFile;
+    // Overwrite the file with the most recent reset information
+    if (fs.FileOpen(&logFile, "/crash.log", LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC) == LFS_ERR_OK) {
+      char buffer[256];
+      const char* reasonStr = Pinetime::Drivers::ResetReasonToString(reason);
+      const uint32_t mallocCount = mallocFailedCount.load(std::memory_order_relaxed);
+      const uint32_t overflowCount = stackOverflowCount.load(std::memory_order_relaxed);
+      const bool hasSnapshot = (Drivers::crash_magic == Drivers::CRASH_MAGIC_VALUE);
 
-  // Load default settings from Flash
+      // Check if this was a failure where we might have captured a PC address
+      if (hasSnapshot && (reason == Drivers::Watchdog::ResetReason::Watchdog || reason == Drivers::Watchdog::ResetReason::CpuLockup)) {
+        snprintf(buffer,
+                 sizeof(buffer),
+                 "CRASH: %s pc=0x%08lX sp=0x%08lX lr=0x%08lX malloc=%lu stackovf=%lu task=%s\n",
+                 reasonStr,
+                 static_cast<unsigned long>(Drivers::crash_pc),
+                 static_cast<unsigned long>(Drivers::crash_sp),
+                 static_cast<unsigned long>(Drivers::crash_lr),
+                 static_cast<unsigned long>(mallocCount),
+                 static_cast<unsigned long>(overflowCount),
+                 stackOverflowTaskName);
+        Drivers::crash_magic = 0; // Reset magic for next time
+      } else if (reason == Drivers::Watchdog::ResetReason::Watchdog) {
+        snprintf(buffer,
+                 sizeof(buffer),
+                 "RESET: %s (no IRQ snapshot) malloc=%lu stackovf=%lu task=%s\n",
+                 reasonStr,
+                 static_cast<unsigned long>(mallocCount),
+                 static_cast<unsigned long>(overflowCount),
+                 stackOverflowTaskName);
+      } else {
+        // Just log the reason (Reset Pin, Soft Reset, NFC, etc.)
+        snprintf(buffer,
+                 sizeof(buffer),
+                 "RESET: %s malloc=%lu stackovf=%lu task=%s\n",
+                 reasonStr,
+                 static_cast<unsigned long>(mallocCount),
+                 static_cast<unsigned long>(overflowCount),
+                 stackOverflowTaskName);
+      }
+
+      fs.FileWrite(&logFile, reinterpret_cast<const uint8_t*>(buffer), strlen(buffer));
+      fs.FileClose(&logFile);
+    }
+  }
+
+  // Load the rest of your settings
   LoadSettingsFromFile();
 }
 
@@ -209,31 +263,25 @@ bool Settings::LoadClocksFromFile(std::vector<Data>& dataList) const {
   // }
 
   lfs_info info = {0};
-  if (fs.Stat(filepath, &info) != LFS_ERR_NOENT) {
+  if (fs.Stat(filepath, &info) == LFS_ERR_NOENT) return false;
 
-    lfs_file_t clocksFile;
+  lfs_file_t clocksFile;
+  if (fs.FileOpen(&clocksFile, filepath, LFS_O_RDONLY) != LFS_ERR_OK) return false;
 
-    if (fs.FileOpen(&clocksFile, filepath, LFS_O_RDONLY) == LFS_ERR_OK) {
-      // int openRes = fs.FileOpen(&clocksFile, filepath, LFS_O_RDONLY);
-      // if (openRes == 0) {
+  // int openRes = fs.FileOpen(&clocksFile, filepath, LFS_O_RDONLY);
+  // if (openRes == 0) {
 
-      size_t bufferSize = info.size; // Adjust buffer size as needed
+  size_t bufferSize = info.size; // Adjust buffer size as needed
 
-      // uint8_t readBuffer[bufferSize];
-      // size_t bytesRead = fs.FileRead(&clocksFile, readBuffer, bufferSize);
-      // bufferSettings.assign(readBuffer, readBuffer + bytesRead);
+  // uint8_t readBuffer[bufferSize];
+  // size_t bytesRead = fs.FileRead(&clocksFile, readBuffer, bufferSize);
+  // bufferSettings.assign(readBuffer, readBuffer + bytesRead);
 
-      std::vector<uint8_t> readBuffer(bufferSize);
-      size_t bytesRead = fs.FileRead(&clocksFile, readBuffer.data(), bufferSize);
-      bufferSettings.assign(readBuffer.begin(), readBuffer.begin() + bytesRead);
+  std::vector<uint8_t> readBuffer(bufferSize);
+  size_t bytesRead = fs.FileRead(&clocksFile, readBuffer.data(), bufferSize);
+  bufferSettings.assign(readBuffer.begin(), readBuffer.begin() + bytesRead);
 
-      fs.FileClose(&clocksFile);
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
+  fs.FileClose(&clocksFile);
 
   if (bufferSettings.empty()) {
     return false;
@@ -264,6 +312,40 @@ bool Settings::LoadClocksFromFile(std::vector<Data>& dataList) const {
   }
 
   bufferSettings.clear();
+
+  return true;
+}
+
+// filepath is now an attribute (member variable) or passed in
+bool Settings::GetFileContent(const std::string& filename, std::string& outputString) const {
+  const char* filepath = filename.c_str();
+  lfs_info info = {0};
+
+  if (fs.Stat(filepath, &info) != LFS_ERR_OK) {
+    return false;
+  }
+
+  lfs_file_t clocksFile;
+  if (fs.FileOpen(&clocksFile, filepath, LFS_O_RDONLY) != LFS_ERR_OK) {
+    return false;
+  }
+
+  outputString.resize(info.size);
+
+  // Use reinterpret_cast to convert char* to uint8_t*
+  int bytesRead = fs.FileRead(&clocksFile, reinterpret_cast<uint8_t*>(&outputString[0]), info.size);
+  
+  fs.FileClose(&clocksFile);
+
+  if (bytesRead < 0) {
+    outputString.clear();
+    return false;
+  }
+
+  // Ensure the string size matches the actual bytes read
+  if (static_cast<uint32_t>(bytesRead) < info.size) {
+    outputString.resize(bytesRead);
+  }
 
   return true;
 }
@@ -444,14 +526,13 @@ bool Settings::parseLine(const std::string& line, Data& outData) const {
   }
   uint8_t value = static_cast<uint8_t>(temp);
 
-  data.monday = (value >> 0) & 1;
-  data.tuesday = (value >> 1) & 1;
-  data.wednesday = (value >> 2) & 1;
+  data.monday = (value >> 6) & 1;
+  data.tuesday = (value >> 5) & 1;
+  data.wednesday = (value >> 4) & 1;
   data.thursday = (value >> 3) & 1;
-  data.friday = (value >> 4) & 1;
-  data.saturday = (value >> 5) & 1;
-  data.sunday = (value >> 6) & 1;
-  // data.extraFlag = (value >> 7) & 1;
+  data.friday = (value >> 2) & 1;
+  data.saturday = (value >> 1) & 1;
+  data.sunday = (value >> 0) & 1;
 
   // Extract the middle substring (between firstPipe+1 and lastPipe-1)
   std::string datesStr = line.substr(firstPipe + 1, lastPipe - firstPipe - 1);
@@ -465,7 +546,12 @@ bool Settings::parseLine(const std::string& line, Data& outData) const {
     //   // handle error: invalid date length
     //   continue;
     // }
-    if (!isdigit(d[0]) || !isdigit(d[1]) || !isdigit(d[2]))
+
+    uint8_t year = base64CharToNum(d[0]);
+    uint8_t month = base64CharToNum(d[1]);
+    uint8_t day = base64CharToNum(d[2]);
+
+    if (day == 255 || month == 255 || year == 255)
       continue;
 
     Date date;
@@ -473,9 +559,12 @@ bool Settings::parseLine(const std::string& line, Data& outData) const {
     // date.day = static_cast<uint8_t>(d[0]);
     // date.month = static_cast<uint8_t>(d[1]);
     // date.year = 2000 + static_cast<uint8_t>(d[2]);
-    date.day = d[0] - '0';
-    date.month = d[1] - '0';
-    date.year = 2000 + (d[2] - '0');
+    // date.day = d[0] - '0';
+    // date.month = d[1] - '0';
+    // date.year = 2000 + (d[2] - '0');
+    date.day = day;
+    date.month = month;
+    date.year = year;
 
     dates.push_back(date);
   }
@@ -527,3 +616,12 @@ std::vector<std::string> Settings::splitString(const std::string& str, char deli
 //   }
 //   return true;
 // }
+
+uint8_t Settings::base64CharToNum(char c) const {
+    if ('A' <= c && c <= 'Z') return static_cast<uint8_t>(c - 'A');          // 0..25
+    if ('a' <= c && c <= 'z') return static_cast<uint8_t>(c - 'a' + 26);     // 26..51
+    if ('0' <= c && c <= '9') return static_cast<uint8_t>(c - '0' + 52);     // 52..61
+    // if (c == '+') return 62;
+    // if (c == '/') return 63;
+    return 255; // use 255 to indicate invalid
+}

@@ -26,6 +26,7 @@
 
 static const char *manuf_name = "Apache Mynewt";
 static const char *model_num = "Mynewt HR Sensor";
+// static const char *model_num = "Firmware verified";
 uint16_t hrs_hrm_handle;
 
 static int
@@ -71,6 +72,11 @@ static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
             .uuid = BLE_UUID16_DECLARE(GATT_MODEL_NUMBER_UUID),
             .access_cb = gatt_svr_chr_access_device_info,
             .flags = BLE_GATT_CHR_F_READ,
+        // }, {
+        //     /* Characteristic: Firmware verified */
+        //     .uuid = BLE_UUID16_DECLARE(GATT_FIRMWARE_VERIFIED_UUID),
+        //     .access_cb = gatt_svr_chr_access_device_info,
+        //     .flags = BLE_GATT_CHR_F_READ,
         }, {
             0, /* No more characteristics in this service */
         }, }
@@ -120,6 +126,11 @@ gatt_svr_chr_access_device_info(uint16_t conn_handle, uint16_t attr_handle,
         rc = os_mbuf_append(ctxt->om, manuf_name, strlen(manuf_name));
         return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
     }
+
+    // if (uuid == GATT_FIRMWARE_VERIFIED_UUID) {
+    //     rc = os_mbuf_append(ctxt->om, firm_ver, strlen(firm_ver));
+    //     return rc == 0 ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+    // }
 
     assert(0);
     return BLE_ATT_ERR_UNLIKELY;

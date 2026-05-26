@@ -2,7 +2,7 @@
 #include <hal/nrf_rtc.h>
 #include <libraries/gpiote/app_gpiote.h>
 #include <libraries/log/nrf_log.h>
-#include "BootloaderVersion.h"
+// #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "displayapp/TouchEvents.h"
@@ -16,10 +16,17 @@
 #include "drivers/PinMap.h"
 #include "main.h"
 #include "BootErrors.h"
+#include "drivers/Watchdog.h"
+#include "components/firmwarevalidator/FirmwareValidator.h"
 
 #include <memory>
+#include <atomic>
 
 using namespace Pinetime::System;
+
+extern std::atomic<uint32_t> mallocFailedCount;
+extern std::atomic<uint32_t> stackOverflowCount;
+extern char stackOverflowTaskName[16];
 
 namespace {
   inline bool in_isr() {
@@ -101,7 +108,19 @@ void SystemTask::Work() {
 
   watchdog.Setup(7, Drivers::Watchdog::SleepBehaviour::Run, Drivers::Watchdog::HaltBehaviour::Pause);
   watchdog.Start();
-  NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::ResetReasonToString(watchdog.GetResetReason()));
+  auto reason = watchdog.GetResetReason();
+  NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::ResetReasonToString(reason));
+
+  Pinetime::Controllers::FirmwareValidator validator;
+  validator.Validate();
+
+  if (Pinetime::Drivers::crash_magic == Pinetime::Drivers::CRASH_MAGIC_VALUE) {
+    NRF_LOG_ERROR("WDT crash capture: pc=0x%08x sp=0x%08x lr=0x%08x",
+                  Pinetime::Drivers::crash_pc,
+                  Pinetime::Drivers::crash_sp,
+                  Pinetime::Drivers::crash_lr);
+    Pinetime::Drivers::crash_magic = 0;
+  }
   if (!nrfx_gpiote_is_init()) {
     nrfx_gpiote_init();
   }
@@ -135,7 +154,8 @@ void SystemTask::Work() {
 
   motionSensor.Init();
   motionController.Init(motionSensor.DeviceType());
-  settingsController.Init();
+
+  settingsController.Init(reason);
 
   displayApp.Register(this);
   // displayApp.Register(&nimbleController.weather());
@@ -143,9 +163,9 @@ void SystemTask::Work() {
   // displayApp.Register(&nimbleController.navigation());
   displayApp.Start(bootError);
 
-  // heartRateSensor.Init();
-  // heartRateSensor.Disable();
-  // heartRateApp.Start();
+  heartRateSensor.Init();
+  heartRateSensor.Disable();
+  heartRateApp.Start();
 
   buttonHandler.Init(this);
 
@@ -182,6 +202,8 @@ void SystemTask::Work() {
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
+  uint32_t lastMallocFailedCount = 0;
+  uint32_t lastStackOverflowCount = 0;
   while (true) {
     UpdateMotion();
 
@@ -293,11 +315,12 @@ void SystemTask::Work() {
           if (state != SystemTaskState::GoingToSleep) {
             break;
           }
-          if (BootloaderVersion::IsValid()) {
-            // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
-            // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
-            spiNorFlash.Sleep();
-          }
+
+          // if (BootloaderVersion::IsValid()) {
+          //   // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
+          //   // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
+          spiNorFlash.Sleep();
+          // }
 
           // Must keep SPI awake when still updating the display for always on
           if (msg == Messages::OnDisplayTaskSleeping) {
@@ -375,6 +398,16 @@ void SystemTask::Work() {
     }
 
     monitor.Process();
+    const uint32_t mallocCount = mallocFailedCount.load(std::memory_order_relaxed);
+    if (mallocCount != lastMallocFailedCount) {
+      NRF_LOG_ERROR("Malloc hook hit count=%u freeHeap=%u", mallocCount, xPortGetFreeHeapSize());
+      lastMallocFailedCount = mallocCount;
+    }
+    const uint32_t overflowCount = stackOverflowCount.load(std::memory_order_relaxed);
+    if (overflowCount != lastStackOverflowCount) {
+      NRF_LOG_ERROR("Stack overflow hook hit count=%u task=%s", overflowCount, stackOverflowTaskName);
+      lastStackOverflowCount = overflowCount;
+    }
     NoInit_BackUpTime = dateTimeController.CurrentDateTime();
     if (nrf_gpio_pin_read(PinMap::Button) == 0) {
       watchdog.Reload();

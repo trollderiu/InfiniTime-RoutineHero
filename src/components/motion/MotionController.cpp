@@ -44,6 +44,8 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps,
 
   if (service != nullptr && (xHistory[0] != x || yHistory[0] != y || zHistory[0] != z)) {
     service->OnNewMotionValues(x, y, z);
+
+    // STORE MOTION IN MEMORY:
     // if (yHistory.Size() > 0 && zHistory.Size() > 0) {
     //   service->OnDeltaMotionValues(x - this->x, y - yHistory[0], z - zHistory[0], hours, minutes);
     // }
@@ -52,7 +54,7 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps,
     uint8_t hours = dateTimeController.Hours();
     uint8_t minutes = dateTimeController.Minutes();
     if (hours > 0 && minutes > 0) {
-      // service->OnDeltaMotionValues(x - this->x, y - yHistory[0], z - zHistory[0], hours, minutes);
+      service->OnDeltaMotionValues(x - xHistory[0], y - yHistory[0], z - zHistory[0], hours, minutes);
     }
     // }
   }

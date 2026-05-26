@@ -9,7 +9,7 @@
 #include "displayapp/TouchEvents.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/motor/MotorController.h"
-#include "components/firmwarevalidator/FirmwareValidator.h"
+// #include "components/firmwarevalidator/FirmwareValidator.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 // #include "components/timer/Timer.h"
@@ -106,7 +106,7 @@ namespace Pinetime {
       Pinetime::Controllers::FS& filesystem;
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
 
-      Pinetime::Controllers::FirmwareValidator validator;
+      // Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;
       // Pinetime::Controllers::Timer timer;
 

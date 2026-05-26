@@ -6,6 +6,7 @@
 #undef max
 #undef min
 #include "Version.h"
+// #include "components/firmwarevalidator/FirmwareValidator.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -15,8 +16,11 @@ namespace Pinetime {
       void Init();
 
       int OnDeviceInfoRequested(struct ble_gatt_access_ctxt* ctxt);
+      // int OnFirmwareVerifiedRequested(struct ble_gatt_access_ctxt* ctxt);
 
     private:
+      // FirmwareValidator firmwareValidator;
+
       static constexpr uint16_t deviceInfoId {0x180a};
       static constexpr uint16_t manufacturerNameId {0x2a29};
       static constexpr uint16_t modelNumberId {0x2a24};
@@ -24,6 +28,7 @@ namespace Pinetime {
       static constexpr uint16_t fwRevisionId {0x2a26};
       static constexpr uint16_t hwRevisionId {0x2a27};
       static constexpr uint16_t swRevisionId {0x2a28};
+      static constexpr uint16_t firmwareVerifiedId {0x2a2f};  // Custom 16-bit UUID
 
       static constexpr const char* manufacturerName = "PINE64";
       static constexpr const char* modelNumber = "PineTime";
@@ -47,7 +52,9 @@ namespace Pinetime {
 
       static constexpr ble_uuid16_t swRevisionUuid {.u {.type = BLE_UUID_TYPE_16}, .value = swRevisionId};
 
-      struct ble_gatt_chr_def characteristicDefinition[7];
+      static constexpr ble_uuid16_t firmwareVerifiedUuid {.u {.type = BLE_UUID_TYPE_16}, .value = firmwareVerifiedId};
+
+      struct ble_gatt_chr_def characteristicDefinition[8];
       struct ble_gatt_svc_def serviceDefinition[2];
     };
   }

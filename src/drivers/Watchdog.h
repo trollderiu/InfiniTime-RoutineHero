@@ -4,6 +4,14 @@
 
 namespace Pinetime {
   namespace Drivers {
+
+    // Declared inside the namespace
+    extern uint32_t crash_pc;
+    extern uint32_t crash_sp;
+    extern uint32_t crash_lr;
+    extern uint32_t crash_magic;
+    static constexpr uint32_t CRASH_MAGIC_VALUE = 0xDEADBEEF;
+
     /// Low level driver for the watchdog based on the nRF52832 Product Specification V1.1
     ///
     /// This driver initializes the timeout and sleep and halt behaviours of the watchdog

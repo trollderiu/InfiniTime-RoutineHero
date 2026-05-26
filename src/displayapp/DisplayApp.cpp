@@ -216,11 +216,13 @@ void DisplayApp::Refresh() {
   };
 
   auto IsPastDimTime = [this]() -> bool {
-    return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000);
+    // return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000);
+    return lv_disp_get_inactive_time(nullptr) >= settingsController.GetScreenTimeOut() - 2000;
   };
 
   auto IsPastSleepTime = [this]() -> bool {
-    return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut());
+    // return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut());
+    return lv_disp_get_inactive_time(nullptr) >= settingsController.GetScreenTimeOut();
   };
 
   TickType_t queueTimeout;

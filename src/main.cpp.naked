@@ -1,0 +1,12 @@
+extern "C" void Reset_Handler();
+
+// Naked attribute prevents the compiler from adding any stack-pushing code
+extern "C" __attribute__((section(".manual_reset"), used, naked)) void Manual_Reset_Handler() {
+    asm volatile(
+        "ldr r0, =0x20010000\n" // Load correct Stack Pointer (Top of RAM)
+        "msr msp, r0\n"         // Force it into the MSP register
+        "isb\n"                 // Instruction Synchronization Barrier
+        "ldr r1, =Reset_Handler\n"
+        "bx r1\n"               // Jump to the real OS startup
+    );
+}

@@ -354,8 +354,8 @@ list(APPEND IMAGE_FILES
         )
 list(APPEND SOURCE_FILES
         stdlib.c
-        FreeRTOS/heap_4_routinehero.c
-        BootloaderVersion.cpp
+        FreeRTOS/heap_4_infinitime.c
+        # BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
         displayapp/screens/Screen.cpp
@@ -469,9 +469,9 @@ list(APPEND SOURCE_FILES
 
 list(APPEND RECOVERY_SOURCE_FILES
         stdlib.c
-        FreeRTOS/heap_4_routinehero.c
+        FreeRTOS/heap_4_infinitime.c
 
-        BootloaderVersion.cpp
+        # BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayAppRecovery.cpp
 
@@ -536,7 +536,7 @@ list(APPEND RECOVERY_SOURCE_FILES
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
         stdlib.c
-        FreeRTOS/heap_4_routinehero.c
+        FreeRTOS/heap_4_infinitime.c
 
         # FreeRTOS
         FreeRTOS/port.c
@@ -546,6 +546,7 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
         drivers/SpiNorFlash.cpp
         drivers/SpiMaster.cpp
         drivers/Spi.cpp
+        drivers/InternalFlash.cpp
         logging/NrfLogger.cpp
 
         components/rle/RleDecoder.cpp
@@ -560,7 +561,7 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 set(INCLUDE_FILES
 
         ${CMAKE_CURRENT_BINARY_DIR}/src/Version.h
-        BootloaderVersion.h
+        # BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
         displayapp/DisplayApp.h
@@ -603,7 +604,7 @@ set(INCLUDE_FILES
         components/datetime/DateTimeController.h
         components/brightness/BrightnessController.h
         components/motion/MotionController.h
-        components/firmwarevalidator/FirmwareValidator.h
+        # components/firmwarevalidator/FirmwareValidator.h
         components/ble/BleController.h
         components/ble/NotificationManager.h
         components/ble/NimbleController.h
@@ -611,7 +612,7 @@ set(INCLUDE_FILES
         components/ble/CurrentTimeClient.h
         components/ble/AlertNotificationClient.h
         components/ble/DfuService.h
-        components/firmwarevalidator/FirmwareValidator.h
+        # components/firmwarevalidator/FirmwareValidator.h
         components/ble/BatteryInformationService.h
         components/ble/FSService.h
         components/ble/ImmediateAlertService.h

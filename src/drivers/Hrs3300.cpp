@@ -34,13 +34,15 @@ void Hrs3300::Init() {
   vTaskDelay(100);
 
   // HRS disabled, 50ms wait time between ADC conversion period, current 12.5mA
-  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x50);
+  // WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x50);
+  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x10);
 
   // Current 12.5mA and low nibble 0xF.
   // Note: Setting low nibble to 0x8 per the datasheet results in
   // modulated LED driver output. Setting to 0xF results in clean,
   // steady output during the ADC conversion period.
-  WriteRegister(static_cast<uint8_t>(Registers::PDriver), ledDriveCurrentValue);
+  // WriteRegister(static_cast<uint8_t>(Registers::PDriver), ledDriveCurrentValue);
+  WriteRegister(static_cast<uint8_t>(Registers::PDriver), 0);
 
   // HRS and ALS both in 15-bit mode results in ~50ms LED drive period
   // and presumably ~50ms ADC conversion period.
@@ -52,18 +54,20 @@ void Hrs3300::Init() {
 
 void Hrs3300::Enable() {
   NRF_LOG_INFO("ENABLE");
-  auto value = ReadRegister(static_cast<uint8_t>(Registers::Enable));
-  value |= 0x80;
-  WriteRegister(static_cast<uint8_t>(Registers::Enable), value);
+  // auto value = ReadRegister(static_cast<uint8_t>(Registers::Enable));
+  // value |= 0x80;
+  // WriteRegister(static_cast<uint8_t>(Registers::Enable), value);
+  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0xD0);
 
   WriteRegister(static_cast<uint8_t>(Registers::PDriver), ledDriveCurrentValue);
 }
 
 void Hrs3300::Disable() {
   NRF_LOG_INFO("DISABLE");
-  auto value = ReadRegister(static_cast<uint8_t>(Registers::Enable));
-  value &= ~0x80;
-  WriteRegister(static_cast<uint8_t>(Registers::Enable), value);
+  // auto value = ReadRegister(static_cast<uint8_t>(Registers::Enable));
+  // value &= ~0x80;
+  // WriteRegister(static_cast<uint8_t>(Registers::Enable), value);
+  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x10);
 
   WriteRegister(static_cast<uint8_t>(Registers::PDriver), 0);
 }
