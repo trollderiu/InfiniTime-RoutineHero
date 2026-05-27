@@ -19,7 +19,7 @@ tools
 *.s
 *.hex
 *.bin
-!bootloader/bootloader-5.0.4.bin
+# !bootloader/bootloader-5.0.4.bin
 *.map
 *.out
 pinetime*.cbp
@@ -52,4 +52,4 @@ src/arm-none-eabi
 # clangd
 .cache/
 
-myenv
+.nvmrc
