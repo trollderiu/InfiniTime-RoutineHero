@@ -68,11 +68,12 @@ RoutineHero runs on devices compatible with InfiniTime, including:
 - PineTime (nRF52832)
 - Dev boards supporting BLE and compatible display controllers (with porting)
 
----
-
 ## 🚀 Getting Started
 
-### Easiest way: Flash the pre-built DFU file
+To get RoutineHero running on your watch, choose one of the flashing options below. After flashing, proceed to configure your child's routine.
+
+### Option A: Flash the pre-built DFU file over BLE (Easiest)
+Use this if you already have a compatible bootloader and want to install the firmware wirelessly.
 
 1. Download the latest DFU package from the repo:  
    [`doc/dfu/pinetime-mcuboot-app-dfu-1.15.0.zip`](doc/dfu/pinetime-mcuboot-app-dfu-1.15.0.zip)
@@ -83,6 +84,63 @@ RoutineHero runs on devices compatible with InfiniTime, including:
    - [nRF Connect for Desktop](https://www.nordicsemi.com/Products/Development-tools/nrf-connect-for-desktop)
 
 3. Follow the instructions in the DFU tool to upload the firmware to your watch over BLE.
+
+---
+
+### Option B: Flash Custom Bootloader + Pre-built Firmware via J-Link (SWD)
+Use this if you want to install our custom bootloader to prevent kids from resetting the device, or if you need to flash the firmware wired.
+
+The included `bootloader.bin` in the root of the repository is a modified version of the official PineTime bootloader. It is customized to load the application firmware immediately (disabling the button-press delay), preventing children from resetting or rolling back the firmware by holding down the button.
+
+> [!IMPORTANT]
+> Installing or updating the bootloader requires opening the watch casing and connecting an SWD debugger (like a J-Link or ST-Link). This is completely optional.
+
+If you have a J-Link debugger connected:
+
+1. Unzip the pre-built DFU package included in the repository to extract the firmware binary:
+   ```bash
+   unzip -o doc/dfu/pinetime-mcuboot-app-dfu-1.15.0.zip -d doc/dfu/
+   ```
+
+2. Run the OpenOCD command from the root of the project to flash both the custom bootloader and the extracted application firmware:
+   ```bash
+   openocd -f interface/jlink.cfg -c "transport select swd" -f target/nrf52.cfg -c "\
+   init; halt; reset_config none; \
+   flash erase_address 0x00000000 0x80000; \
+   program bootloader.bin verify 0x00000000; \
+   program $(ls doc/dfu/pinetime-mcuboot-app-image-1.15.*.bin) verify 0x8000; \
+   reset run; exit"
+   ```
+
+---
+
+### Option C: Build from Source and Flash (Advanced)
+Use this if you want to customize the firmware code and compile it yourself.
+
+1. **Clone the Repo**
+   ```bash
+   git clone https://github.com/trollderiu/InfiniTime-RoutineHero.git
+   cd InfiniTime-RoutineHero
+   ```
+
+2. **Build the Firmware**  
+   Follow the [InfiniTime build instructions](https://github.com/InfiniTimeOrg/InfiniTime#building-the-firmware), as they apply here too.
+   ```bash
+   docker pull --platform linux/amd64 infinitime/infinitime-build
+   docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime/infinitime-build
+   ```
+
+3. **Flash the Custom Binary**  
+   - **Over BLE (DFU):** Flash the resulting DFU package at `build/output/src/pinetime-mcuboot-app-dfu-1.15.*.zip` using the tools from Option A.
+   - **Over J-Link (SWD):** If you want to use J-Link with your newly compiled binary, make sure you have `bootloader.bin` in the root, and run:
+     ```bash
+     openocd -f interface/jlink.cfg -c "transport select swd" -f target/nrf52.cfg -c "\
+     init; halt; reset_config none; \
+     flash erase_address 0x00000000 0x80000; \
+     program bootloader.bin verify 0x00000000; \
+     program $(ls build/output/src/pinetime-mcuboot-app-image-1.15.*.bin) verify 0x8000; \
+     reset run; exit"
+     ```
 
 ---
 
@@ -98,28 +156,6 @@ This app lets you:
 - Sync routines wirelessly to the watch
 
 *iOS support is planned for the future.*
-
----
-
-### 🛠 Building from Source (Optional)
-
-Want to build or customize the firmware yourself?
-
-1. **Clone the Repo**
-   ```bash
-   git clone https://github.com/trollderiu/InfiniTime-RoutineHero.git
-   cd InfiniTime-RoutineHero
-   ```
-
-2. **Build the Firmware**  
-   Follow the [InfiniTime build instructions](https://github.com/InfiniTimeOrg/InfiniTime#building-the-firmware), as they apply here too.
-   ```bash
-   docker pull --platform linux/amd64 infinitime/infinitime-build
-   docker run --rm -it -v ${PWD}:/sources --user $(id -u):$(id -g) infinitime/infinitime-build
-   ```
-
-3. **Flash to Device**  
-   Use your preferred method (DFU, SWD, etc.) to upload to your PineTime or compatible hardware.
 
 ---
 
