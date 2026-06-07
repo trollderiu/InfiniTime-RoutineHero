@@ -93,6 +93,7 @@ void RoutineHeroWatchFace::InitLvgl() {
   lv_label_set_recolor(label_time, true);
 
   label_name = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text(label_name, "");
   lv_obj_set_auto_realign(label_name, true);
   lv_obj_align(label_name, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 1);
   lv_obj_set_style_local_text_color(label_name, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCCCCCC));
