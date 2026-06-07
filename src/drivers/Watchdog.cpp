@@ -123,8 +123,10 @@ void Watchdog::Setup(uint8_t timeoutSeconds, SleepBehaviour sleepBehaviour, Halt
   EnableFirstReloadRegister();
 
   // --- ADD THIS: Enable Interrupt ---
+#ifdef __arm__
   NRF_WDT->INTENSET = WDT_INTENSET_TIMEOUT_Msk; 
   NVIC_EnableIRQ(WDT_IRQn);
+#endif
   // ----------------------------------
 
   resetReason = ::GetResetReason();
@@ -166,6 +168,7 @@ const char* Pinetime::Drivers::ResetReasonToString(Watchdog::ResetReason reason)
   }
 }
 
+#ifdef __arm__
 extern "C" void WDT_IRQHandler(void) {
   uint32_t lr;
   asm volatile("mov %0, lr" : "=r"(lr));
@@ -183,3 +186,4 @@ extern "C" void WDT_IRQHandler(void) {
   // Clear the event so we don't loop (though reset is imminent)
   NRF_WDT->EVENTS_TIMEOUT = 0;
 }
+#endif
