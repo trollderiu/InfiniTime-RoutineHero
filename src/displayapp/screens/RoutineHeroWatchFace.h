@@ -103,6 +103,9 @@ namespace Pinetime {
         lv_obj_t* bleIcon;
         // lv_obj_t* mainIcon;
         bool wasEmpty = false;
+        lv_obj_t* img_play = nullptr;
+        lv_obj_t* img_ios = nullptr;
+        lv_obj_t* numbers_labels[12] = {nullptr};
 
         lv_obj_t* canvas;
         static uint8_t* cbuf;

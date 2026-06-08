@@ -287,6 +287,7 @@ set(LVGL_SRC
         # LVGL Fonts
         libs/lvgl/src/lv_font/lv_font_montserrat_12.c
         libs/lvgl/src/lv_font/lv_font_montserrat_16.c
+        libs/lvgl/src/lv_font/lv_font_montserrat_24.c
         #libs/lvgl/src/lv_font/lv_font_montserrat_18.c
         #libs/lvgl/src/lv_font/lv_font_montserrat_22.c
         #libs/lvgl/src/lv_font/lv_font_montserrat_28.c

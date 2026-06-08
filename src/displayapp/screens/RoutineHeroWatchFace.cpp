@@ -8,8 +8,11 @@
 #include "components/settings/Settings.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include "displayapp/icons/arrow/arrowicon.c"
-#include "displayapp/icons/heart/hearticon.c"
+#include "displayapp/icons/routinehero/routinehero.c"
 #include "displayapp/DisplayApp.h"
+
+#include "displayapp/icons/routinehero/play_store_badge.c"
+#include "displayapp/icons/routinehero/apple_store_badge.c"
 #include <hal/nrf_gpio.h>   //nrf_gpio_pin_clear(PinMap::Motor);
 #include "drivers/PinMap.h" //nrf_gpio_pin_clear(PinMap::Motor);
 // #include <iostream>
@@ -128,11 +131,11 @@ void RoutineHeroWatchFace::InitLvgl() {
   // lv_line_set_points(major_line, major_line_points, 2);
 
   for (i = 0; i < sizeof(numbers) / sizeof(numbers[0]); ++i) {
-    lv_obj_t* number = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text(number, std::to_string(i + 1).c_str());
+    numbers_labels[i] = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_text(numbers_labels[i], std::to_string(i + 1).c_str());
     // lv_coord_t number_height2 = 12; // 23
-    lv_obj_set_pos(number, numbers[i].x - lv_obj_get_width(number) / 2, numbers[i].y - lv_obj_get_height(number) / 2);
-    lv_obj_set_style_local_text_color(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_obj_set_pos(numbers_labels[i], numbers[i].x - lv_obj_get_width(numbers_labels[i]) / 2, numbers[i].y - lv_obj_get_height(numbers_labels[i]) / 2);
+    lv_obj_set_style_local_text_color(numbers_labels[i], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   }
 
   batteryIcon.Create(lv_scr_act());
@@ -241,45 +244,79 @@ void RoutineHeroWatchFace::Refresh() {
     // COMPENSATE NO ICON LOADED:
     brightnessController.Set(Controllers::BrightnessController::Levels::High);
 
+    printf("GEMINI: Refresh() entered. dataList is empty!\n");
+    printf("GEMINI: minor_scales hidden status before: %d\n", lv_obj_get_hidden(minor_scales));
+    // Hide analog clock scales and numbers
+    lv_obj_set_hidden(pie, true);
+    lv_obj_set_hidden(minor_scales, true);
+    lv_obj_set_hidden(major_scales, true);
+    for (int j = 0; j < 12; ++j) {
+      if (numbers_labels[j] != nullptr) {
+        lv_obj_set_hidden(numbers_labels[j], true);
+      }
+    }
+    printf("GEMINI: minor_scales hidden status after: %d\n", lv_obj_get_hidden(minor_scales));
+
     // lv_obj_set_hidden(canvas, true);
     lv_obj_clean(pie);
 
     // Create label
     if (!clocksFile) {
-      lv_label_set_text_static(label_time, "Welcome!\nDownload & connect\nthe RoutineHero app!\n ");
-
-      // // Pinetime::Drivers::InternalFlash::WriteWord(0x00000508, 0x24FF42A0);
-
-      // // 1. Read the 32-bit word at the bootloader address
-      // uint32_t word = *(volatile uint32_t*)0x00000508;
-
-      // // 2. Prepare a string buffer for the label
-      // static char msg[128];
-      // snprintf(msg, sizeof(msg),
-      //         "Welcome!\nDownload & connect\nthe RoutineHero app!\n0x%08lX",
-      //         word);
-
-      // // 3. Update the LVGL label text
-      // lv_label_set_text_static(label_time, msg);
-
+      lv_label_set_text_static(label_time, "RoutineHero");
     } else {
       lv_label_set_text_static(label_time, "Error\nCorrupted schedule\nUpdate the watch!\n ");
     }
+    lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_montserrat_24);
     lv_obj_set_style_local_text_line_space(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, 9);
     lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
-    lv_obj_align(label_time, nullptr, LV_ALIGN_CENTER, 0, -20);
+    lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_MID, 0, 82);
 
     // Make sure canvas is visible
     lv_obj_set_hidden(canvas, false);
     lv_canvas_fill_bg(canvas, LV_COLOR_BLACK, 0); // Invalid write of size 8
-    lv_canvas_transform(canvas, (lv_img_dsc_t*) &hearticon, 0, LV_IMG_ZOOM_NONE, 0, 0, 64, 64, false);
-    lv_obj_set_pos(canvas, 90, 140);
+    lv_canvas_transform(canvas, (lv_img_dsc_t*) &routinehero, 0, LV_IMG_ZOOM_NONE, 0, 0, 64, 64, false);
+    lv_obj_set_pos(canvas, 88, 15);
+
+    // Lazy-create store badge images if they don't exist yet
+    if (img_play == nullptr) {
+      img_play = lv_img_create(lv_scr_act(), nullptr);
+      lv_img_set_src(img_play, &play_store_icon);
+      lv_obj_set_style_local_image_recolor(img_play, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    }
+    if (img_ios == nullptr) {
+      img_ios = lv_img_create(lv_scr_act(), nullptr);
+      lv_img_set_src(img_ios, &apple_store_icon);
+      lv_obj_set_style_local_image_recolor(img_ios, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    }
+
+    // Position and show store logos & labels (stacked layout)
+    lv_obj_set_pos(img_play, 32, 138);
+    lv_obj_set_hidden(img_play, false);
+
+    lv_obj_set_pos(img_ios, 32, 191);
+    lv_obj_set_hidden(img_ios, false);
 
     return;
   }
 
   if (wasEmpty) {
     lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+    if (img_play != nullptr) {
+      lv_obj_set_hidden(img_play, true);
+    }
+    if (img_ios != nullptr) {
+      lv_obj_set_hidden(img_ios, true);
+    }
+    
+    // Restore analog clock scales and numbers
+    lv_obj_set_hidden(pie, false);
+    lv_obj_set_hidden(minor_scales, false);
+    lv_obj_set_hidden(major_scales, false);
+    for (int j = 0; j < 12; ++j) {
+      if (numbers_labels[j] != nullptr) {
+        lv_obj_set_hidden(numbers_labels[j], false);
+      }
+    }
     wasEmpty = false;
   }
 
