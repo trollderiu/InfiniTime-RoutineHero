@@ -179,5 +179,5 @@ void MotionService::UnsubscribeNotification(uint16_t attributeHandle) {
 }
 
 bool MotionService::IsMotionNotificationSubscribed() const {
-  return motionValuesNoficationEnabled;
+  return motionValuesNoficationEnabled || stepCountNoficationEnabled;
 }
