@@ -214,9 +214,10 @@ void RoutineHeroWatchFace::Refresh() {
     }
   }
 
-  // STOP IF TIME NOT UPDATED
+  // STOP IF TIME NOT UPDATED (unless reload is pending via sAngle == (uint16_t)-1)
   currentDateTime = dateTimeController.CurrentDateTime();
-  if (!currentDateTime.IsUpdated())
+  bool isReloadTriggered = (dateTimeController.sAngle == (uint16_t)-1);
+  if (!currentDateTime.IsUpdated() && !isReloadTriggered)
     return;
 
   uint8_t year = static_cast<uint8_t>(dateTimeController.Year() - 2000);
@@ -233,6 +234,8 @@ void RoutineHeroWatchFace::Refresh() {
   // GEMINI: If sAngle is -1, it means we came from a BLE RELOAD command
   if (dateTimeController.sAngle == (uint16_t)-1) {
     lv_img_cache_invalidate_src(NULL); // Clear the entire image cache
+    this->dataList.clear();
+    this->clocksFile = settingsController.LoadClocksFromFile(this->dataList);
   }
 
   dateTimeController.sAngle = angle1440;
@@ -256,6 +259,9 @@ void RoutineHeroWatchFace::Refresh() {
       }
     }
     printf("GEMINI: minor_scales hidden status after: %d\n", lv_obj_get_hidden(minor_scales));
+
+    // Hide label_name on welcome screen to avoid clutter
+    lv_obj_set_hidden(label_name, true);
 
     // lv_obj_set_hidden(canvas, true);
     lv_obj_clean(pie);
@@ -301,6 +307,10 @@ void RoutineHeroWatchFace::Refresh() {
 
   if (wasEmpty) {
     lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+    lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_montserrat_16);
+    lv_obj_set_style_local_text_line_space(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, 0);
+    lv_label_set_align(label_time, LV_LABEL_ALIGN_LEFT);
+
     if (img_play != nullptr) {
       lv_obj_set_hidden(img_play, true);
     }
@@ -317,6 +327,7 @@ void RoutineHeroWatchFace::Refresh() {
         lv_obj_set_hidden(numbers_labels[j], false);
       }
     }
+    lv_obj_set_hidden(label_name, false);
     wasEmpty = false;
   }
 
